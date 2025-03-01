@@ -1,12 +1,15 @@
 import { Sequelize } from "sequelize"
+import dotenv from "dotenv"
 
-export const sequelize = new Sequelize("nextmeal", "root", "", {
-  host: "localhost",
+dotenv.config()
+
+export const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+  host: process.env.DB_HOST,
   dialect: "mysql",
-  logging: false,
+  logging: console.log, // Cambiamos a console.log para ver las consultas SQL
 })
 
-export const connectDB = async () => {
+export const conectarDB = async () => {
   try {
     await sequelize.authenticate()
     console.log("Conexión a la base de datos establecida correctamente.")
