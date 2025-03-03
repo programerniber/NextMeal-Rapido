@@ -1,4 +1,4 @@
-import Cliente from "../models/cliente.model.js"
+import Cliente from "../models/cliente-model.js"
 
 export class ClienteRepository {
   async obtenerTodos() {
@@ -6,12 +6,12 @@ export class ClienteRepository {
       order: [["id", "DESC"]],
     })
   }
-
+ 
   async obtenerPorId(id) {
     return await Cliente.findByPk(id)
   }
-
-  async obtenerPorEmail(email) {
+ 
+  async obtenerPorEmail(email) { 
     return await Cliente.findOne({ where: { correoElectronico: email } })
   }
 
@@ -22,7 +22,7 @@ export class ClienteRepository {
   async crear(clienteData) {
     return await Cliente.create(clienteData)
   }
-
+  
   async actualizar(id, clienteData) {
     const cliente = await Cliente.findByPk(id)
     if (!cliente) return null

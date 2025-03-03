@@ -1,4 +1,4 @@
-import { ClienteService } from "../services/cliente.service.js"
+import { ClienteService } from "../services/cliente-service.js"
 
 const clienteService = new ClienteService()
 
@@ -9,7 +9,7 @@ export async function obtenerTodosLosClientes(req, res) {
   } catch (error) {
     console.error("Error al obtener clientes:", error)
     res.status(500).json({ exito: false, mensaje: "Error interno del servidor" })
-  }
+  } 
 }
 
 export async function obtenerClientePorId(req, res) {
@@ -42,7 +42,7 @@ export async function crearCliente(req, res) {
 
 export async function actualizarCliente(req, res) {
   try {
-    const { id } = req.params
+    const { id } = req.params 
     const clienteData = req.body
     const clienteActualizado = await clienteService.actualizarCliente(id, clienteData)
     res.status(200).json({ exito: true, data: clienteActualizado })
@@ -88,5 +88,4 @@ export async function cambiarEstadoCliente(req, res) {
     }
     res.status(500).json({ exito: false, mensaje: "Error interno del servidor" })
   }
-}
-
+} 

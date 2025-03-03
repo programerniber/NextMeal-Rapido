@@ -6,7 +6,7 @@ dotenv.config()
 export const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
   host: process.env.DB_HOST,
   dialect: "mysql",
-  logging: console.log, // Cambiamos a console.log para ver las consultas SQL
+  logging: console.log,
 })
 
 export const conectarDB = async () => {
@@ -17,5 +17,4 @@ export const conectarDB = async () => {
     console.error("Error al conectar a la base de datos:", error)
     process.exit(1)
   }
-}
-
+} 

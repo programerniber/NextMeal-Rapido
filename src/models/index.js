@@ -1,12 +1,10 @@
 import { sequelize } from "../config/database.js"
-import Cliente from "./cliente.model.js"
+import Cliente from "./cliente-model.js"
 
-// Exportar los modelos
 export const models = {
   Cliente
 }
 
-// Sincronizar modelos con la base de datos
 export const sincronizarModelos = async () => {
   try {
     await sequelize.sync({ alter: true })
@@ -15,6 +13,3 @@ export const sincronizarModelos = async () => {
     console.error("Error al sincronizar modelos:", error)
   }
 }
-
-
-

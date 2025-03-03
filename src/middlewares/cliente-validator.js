@@ -1,29 +1,36 @@
 import { body, param, validationResult } from "express-validator"
 
 export const validarCreacionCliente = [
+
   body("nombreCompleto")
     .notEmpty()
     .withMessage("El nombre completo es obligatorio")
     .isLength({ min: 3, max: 100 })
     .withMessage("El nombre debe tener entre 3 y 100 caracteres"),
 
-  body("documentoIdentidad")
+  body("tipoDocumento")
+    .optional()
+    .isIn(["cc","tarjeta identidad","passport"])
+    .withMessage("ingrese solo cc - tarjeta identida - "),
+ 
+  body("documentoIdentidad") 
     .notEmpty()
     .withMessage("El documento de identidad es obligatorio")
-    .isLength({ min: 5, max: 20 })
-    .withMessage("El documento debe tener entre 5 y 20 caracteres"),
+    .isLength({ min: 6, max:10 })
+    .withMessage("El documento debe tener entre 6 y 10 caracteres"),
 
   body("correoElectronico")
-    .notEmpty()
-    .withMessage("El correo electrónico es obligatorio")
-    .isEmail()
-    .withMessage("Debe proporcionar un correo electrónico válido"),
+    .notEmpty().withMessage("El correo electrónico es obligatorio")
+    .isEmail().withMessage("Debe ser un correo electrónico válido")
+    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|org)$/i)
+    .withMessage("El correo debe contener '@' y terminar en '.com', '.net', '.org'"),
+  
 
   body("telefono")
-    .notEmpty()
+    .notEmpty() 
     .withMessage("El teléfono es obligatorio")
-    .matches(/^\+?[0-9]{8,15}$/)
-    .withMessage("Debe proporcionar un número de teléfono válido"),
+    .isLength({min:10,max:10})
+    .withMessage("solo se permite 10 caracteres "),
 
   body("direccion")
     .notEmpty()
@@ -35,7 +42,7 @@ export const validarCreacionCliente = [
     .notEmpty()
     .withMessage("El género es obligatorio")
     .isIn(["Masculino", "Femenino", "Otro"])
-    .withMessage("El género debe ser Masculino, Femenino u Otro"),
+    .withMessage("El género debe ser en mayuscula la primera palabra"),
 
   body("contrasena")
     .notEmpty()
@@ -51,24 +58,34 @@ export const validarCreacionCliente = [
     next()
   },
 ]
-
+ 
 export const validarActualizacionCliente = [
   body("nombreCompleto")
     .optional()
     .isLength({ min: 3, max: 100 })
     .withMessage("El nombre debe tener entre 3 y 100 caracteres"),
 
+    body("tipoDocumento")
+    .optional()
+    .isIn(["cc","tarjeta identidad","passport"])
+    .withMessage("ingrese solo cc - tarjeta identida - "),
+
   body("documentoIdentidad")
     .optional()
-    .isLength({ min: 5, max: 20 })
-    .withMessage("El documento debe tener entre 5 y 20 caracteres"),
+    .isLength({ min: 6, max: 10 })
+    .withMessage("El documento debe tener 6 a 10 caracteres"),
 
-  body("correoElectronico").optional().isEmail().withMessage("Debe proporcionar un correo electrónico válido"),
+  body("correoElectronico")
+    .notEmpty().withMessage("El correo electrónico es obligatorio")
+    .isEmail().withMessage("Debe ser un correo electrónico válido")
+    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|org)$/i)
+    .withMessage("El correo debe contener '@' y terminar en '.com', '.net', '.org',"),
 
   body("telefono")
-    .optional()
-    .matches(/^\+?[0-9]{8,15}$/)
-    .withMessage("Debe proporcionar un número de teléfono válido"),
+    .notEmpty() 
+    .withMessage("El teléfono es obligatorio")
+    .isLength({min:10,max:10})
+    .withMessage("solo se permite 10 caracteres "),
 
   body("direccion")
     .optional()
@@ -78,7 +95,7 @@ export const validarActualizacionCliente = [
   body("genero")
     .optional()
     .isIn(["Masculino", "Femenino", "Otro"])
-    .withMessage("El género debe ser Masculino, Femenino u Otro"),
+    .withMessage("El género debe ser en mayuscula la primera palabra"),
 
   body("contrasena").optional().isLength({ min: 6 }).withMessage("La contraseña debe tener al menos 6 caracteres"),
 

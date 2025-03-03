@@ -1,78 +1,33 @@
-import { ClienteRepository } from "../repositories/cliente.repository.js"
+import Cliente from "../models/cliente-model.js"
 
 export class ClienteService {
-  constructor() {
-    this.clienteRepository = new ClienteRepository()
-  }
-
   async obtenerTodosLosClientes() {
-    return await this.clienteRepository.obtenerTodos()
+    return await Cliente.findAll()
   }
-
+ 
   async obtenerClientePorId(id) {
-    const cliente = await this.clienteRepository.obtenerPorId(id)
-    if (!cliente) {
-      throw new Error("Cliente no encontrado")
-    }
+    const cliente = await Cliente.findByPk(id)
+    if (!cliente) throw new Error("Cliente no encontrado")
     return cliente
   }
 
   async crearCliente(clienteData) {
-    const existeEmail = await this.clienteRepository.obtenerPorEmail(clienteData.correoElectronico)
-    if (existeEmail) {
-      throw new Error("Ya existe un cliente con este correo electrónico")
-    }
-
-    const existeDocumento = await this.clienteRepository.obtenerPorDocumento(clienteData.documentoIdentidad)
-    if (existeDocumento) {
-      throw new Error("Ya existe un cliente con este documento de identidad")
-    }
-
-    return await this.clienteRepository.crear(clienteData)
+    return await Cliente.create(clienteData)
   }
 
   async actualizarCliente(id, clienteData) {
-    if (clienteData.correoElectronico) {
-      const existeEmail = await this.clienteRepository.obtenerPorEmail(clienteData.correoElectronico)
-      if (existeEmail && existeEmail.id !== Number.parseInt(id)) {
-        throw new Error("Ya existe un cliente con este correo electrónico")
-      }
-    }
-
-    if (clienteData.documentoIdentidad) {
-      const existeDocumento = await this.clienteRepository.obtenerPorDocumento(clienteData.documentoIdentidad)
-      if (existeDocumento && existeDocumento.id !== Number.parseInt(id)) {
-        throw new Error("Ya existe un cliente con este documento de identidad")
-      }
-    }
-
-    const clienteActualizado = await this.clienteRepository.actualizar(id, clienteData)
-    if (!clienteActualizado) {
-      throw new Error("Cliente no encontrado")
-    }
-
-    return clienteActualizado
+    const cliente = await this.obtenerClientePorId(id)
+    return await cliente.update(clienteData)
   }
 
   async eliminarCliente(id) {
-    const resultado = await this.clienteRepository.eliminar(id)
-    if (!resultado) {
-      throw new Error("Cliente no encontrado")
-    }
-    return { mensaje: "Cliente eliminado correctamente" }
+    const cliente = await this.obtenerClientePorId(id)
+    await cliente.destroy()
+    return { mensaje: "Cliente eliminado exitosamente" }
   }
 
   async cambiarEstadoCliente(id, estado) {
-    if (estado !== "Activo" && estado !== "Inactivo") {
-      throw new Error("Estado inválido. Debe ser 'Activo' o 'Inactivo'")
-    }
-
-    const clienteActualizado = await this.clienteRepository.cambiarEstado(id, estado)
-    if (!clienteActualizado) {
-      throw new Error("Cliente no encontrado")
-    }
-
-    return clienteActualizado
+    const cliente = await this.obtenerClientePorId(id)
+    return await cliente.update({ estado })
   }
-}
-
+} 

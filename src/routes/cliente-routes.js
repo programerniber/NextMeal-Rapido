@@ -6,16 +6,16 @@ import {
   actualizarCliente,
   eliminarCliente,
   cambiarEstadoCliente,
-} from "../controllers/cliente.controller.js"
-import {
+} from "../controllers/cliente-controller.js"
+import { 
   validarCreacionCliente,
   validarActualizacionCliente,
   validarIdCliente,
   validarCambioEstado,
-} from "../middlewares/cliente.validator.js"
-
-const router = Router()
-
+} from "../middlewares/cliente-validator.js"
+ 
+const router = Router()  
+  
 router.get("/", obtenerTodosLosClientes)
 router.get("/:id", validarIdCliente, obtenerClientePorId)
 router.post("/", validarCreacionCliente, crearCliente)
@@ -24,6 +24,3 @@ router.delete("/:id", validarIdCliente, eliminarCliente)
 router.patch("/:id/estado", validarCambioEstado, cambiarEstadoCliente)
 
 export default router
-
-
- 
