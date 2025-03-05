@@ -6,6 +6,9 @@ import { errorHandler } from "./src/middlewares/errorHandler.js"
 import { conectarDB } from "./src/config/database.js"
 import { sincronizarModelos } from "./src/models/index.js"
 import router from "./src/routes/cliente-routes.js"
+import routerproducto from "./src/routes/producto-routes.js"
+import routerpedido from "./src/routes/pedido-routes.js"
+import routerDetallePedido from "./src/routes/detalle_pedido-routes.js"
 
 dotenv.config()
 
@@ -21,6 +24,10 @@ app.get("/api/test", (req, res) => {
 })
   
 app.use("/api/clientes", router)
+app.use("/api/productos", routerproducto)
+app.use("/api/pedidos", routerpedido)
+app.use("/api/detallepedido", routerDetallePedido)
+
 
 app.use(errorHandler) 
 
@@ -33,8 +40,10 @@ const inicializarBaseDeDatos = async () => {
     console.error("Error al inicializar la base de datos:", error)
     process.exit(1)
   }  
-} 
+}  
 
 inicializarBaseDeDatos()
 
-export default app 
+export default app  
+
+

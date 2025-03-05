@@ -4,6 +4,12 @@ import { sequelize } from "../config/database.js"
 const Cliente = sequelize.define(
   "Cliente",
   {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    
     nombreCompleto: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -51,7 +57,7 @@ const Cliente = sequelize.define(
       defaultValue: "Activo",
     },
   },
-  {
+  { 
     timestamps: true,
     tableName: "clientes",
   },
