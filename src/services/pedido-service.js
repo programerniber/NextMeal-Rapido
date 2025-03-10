@@ -1,47 +1,70 @@
 import Pedido from "../models/pedido-model.js";
 import Cliente from "../models/cliente-model.js";
+import Producto from "../models/producto-model.js";
 
 export class PedidoService {
-  async obtenerTodosLosPedidos() {
+  
+  async obtenerTodos() {
     return await Pedido.findAll({
-      
-      include: {
-        model: Cliente,
-        attributes: ["nombreCompleto"], 
-      },
+      include: [
+        {
+          model: Cliente,
+          attributes: ["nombrecompleto"],
+        },
+        {
+          model: Producto,
+          attributes: ["nombre", "precio"],
+        },
+      ],
       order: [["id", "DESC"]],
     });
   }
- 
-  async obtenerPedidoPorId(id) {
+
+  async obtenerPorId(id) {
     const pedido = await Pedido.findByPk(id, {
-      include: {
-        model: Cliente,
-        attributes: ["nombreCompleto"],
-      },
+      include: [
+        {
+          model: Cliente,
+          attributes: ["nombrecompleto"],
+        },
+        {
+          model: Producto,
+          attributes: ["nombre", "precio"],
+        },
+      ],
     });
     if (!pedido) throw new Error("Pedido no encontrado");
     return pedido;
   }
 
-  async crearPedido(pedidoData) {
-    return await Pedido.create(pedidoData); 
+  async crearpedidos(pedidoData) {
+    return await Pedido.create(pedidoData);
   }
 
-  async actualizarPedido(id, pedidoData) {
-    const pedido = await this.obtenerPedidoPorId(id);
+  async actualizarpedidos(id, pedidoData) {
+    const pedido = await this.obtenerPorId(id);
     return await pedido.update(pedidoData);
   }
 
-  async eliminarPedido(id) {
-    const pedido = await this.obtenerPedidoPorId(id);
+  async eliminarpedidos(id) {
+    const pedido = await this.obtenerPorId(id);
+    
+    if (pedido.estado === "entregado") {
+      throw new Error("No se puede eliminar un pedido que ya fue entregado");
+    }
+
     await pedido.destroy();
     return { mensaje: "Pedido eliminado exitosamente" };
   }
 
-  async cambiarEstadoPedido(id, estado) {
-    const pedido = await this.obtenerPedidoPorId(id);
+  async cambiarEstadopedidos(id, estado) {
+    const pedido = await this.obtenerPorId(id);
+
+    const estadosValidos = ["pendiente", "preparacion", "entregado", "cancelado"];
+    if (!estadosValidos.includes(estado)) {
+      throw new Error("Estado no válido");
+    }
+
     return await pedido.update({ estado });
   }
 }
- 

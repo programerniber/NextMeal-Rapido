@@ -1,140 +1,184 @@
-import { body, param, validationResult } from "express-validator"
+import { body, validationResult } from "express-validator";
+import { ClienteRepository } from "../repositories/cliente-repository.js";
 
-export const validarCreacionCliente = [
+const clienteRepository = new ClienteRepository();
 
-  body("nombreCompleto")
-    .notEmpty()
-    .withMessage("El nombre completo es obligatorio")
-    .isLength({ min: 3, max: 100 })
-    .withMessage("El nombre debe tener entre 3 y 100 caracteres"),
+export async function validarCreacionCliente(req, res, next) {
+  try {
+    await Promise.all([
+      body("nombreCompleto")
+        .notEmpty().withMessage("El nombre completo es obligatorio")
+        .isLength({ min: 3, max: 100 }).withMessage("Debe tener entre 3 y 100 caracteres")
+        .run(req),
 
-  body("tipoDocumento")
-    .optional()
-    .isIn(["cc","tarjeta identidad","passport"])
-    .withMessage("ingrese solo cc - tarjeta identida - "),
- 
-  body("documentoIdentidad") 
-    .notEmpty()
-    .withMessage("El documento de identidad es obligatorio")
-    .isLength({ min: 6, max:10 })
-    .withMessage("El documento debe tener entre 6 y 10 caracteres"),
+      body("tipoDocumento")
+        .optional()
+        .isIn(["cc", "tarjeta identidad", "passport"])
+        .withMessage("Tipo ingrese cc, tarjeta identidad o passport")
+        .run(req),
 
-  body("correoElectronico")
-    .notEmpty().withMessage("El correo electrónico es obligatorio")
-    .isEmail().withMessage("Debe ser un correo electrónico válido")
-    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|org)$/i)
-    .withMessage("El correo debe contener '@' y terminar en '.com', '.net', '.org'"),
-  
+      body("documentoIdentidad")
+        .notEmpty().withMessage("El documento es obligatorio")
+        .isLength({ min: 6, max: 10 }).withMessage("Debe tener entre 6 y 10 caracteres")
+        .run(req),
 
-  body("telefono")
-    .notEmpty() 
-    .withMessage("El teléfono es obligatorio")
-    .isLength({min:10,max:10})
-    .withMessage("solo se permite 10 caracteres "),
+      body("correoElectronico")
+        .notEmpty().withMessage("El correo es obligatorio")
+        .isEmail().withMessage("Debe ser un correo válido")
+        .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|org)$/i)
+        .withMessage("Debe terminar en '.com', '.net' o '.org'")
+        .run(req),
 
-  body("direccion")
-    .notEmpty()
-    .withMessage("La dirección es obligatoria")
-    .isLength({ min: 5, max: 200 })
-    .withMessage("La dirección debe tener entre 5 y 200 caracteres"),
+      body("telefono")
+        .notEmpty().withMessage("El teléfono es obligatorio")
+        .isNumeric().withMessage("Debe contener solo números")
+        .isLength({ min: 10, max: 10 }).withMessage("Debe tener exactamente 10 caracteres")
+        .run(req),
 
-  body("genero")
-    .notEmpty()
-    .withMessage("El género es obligatorio")
-    .isIn(["Masculino", "Femenino", "Otro"])
-    .withMessage("El género debe ser en mayuscula la primera palabra"),
+      body("direccion")
+        .notEmpty().withMessage("La dirección es obligatoria")
+        .isLength({ min: 5, max: 200 }).withMessage("Debe tener entre 5 y 200 caracteres")
+        .run(req),
 
-  body("contrasena")
-    .notEmpty()
-    .withMessage("La contraseña es obligatoria")
-    .isLength({ min: 6 })
-    .withMessage("La contraseña debe tener al menos 6 caracteres"),
+      body("genero")
+        .notEmpty().withMessage("El género es obligatorio")
+        .isIn(["masculino", "femenino", "0tro"])
+        .withMessage("Debe ser: masculino, femenino , otro")
+        .run(req)
+    ]);
 
-  (req, res, next) => {
-    const errores = validationResult(req)
+    
+    const errores = validationResult(req);
     if (!errores.isEmpty()) {
-      return res.status(400).json({ errores: errores.array() })
+      return res.status(400).json({ exito: false, errores: errores.array() });
     }
-    next()
-  },
-]
- 
-export const validarActualizacionCliente = [
-  body("nombreCompleto")
-    .optional()
-    .isLength({ min: 3, max: 100 })
-    .withMessage("El nombre debe tener entre 3 y 100 caracteres"),
 
-    body("tipoDocumento")
-    .optional()
-    .isIn(["cc","tarjeta identidad","passport"])
-    .withMessage("ingrese solo cc - tarjeta identida - "),
+    
+    const { documentoIdentidad, correoElectronico, telefono } = req.body;
 
-  body("documentoIdentidad")
-    .optional()
-    .isLength({ min: 6, max: 10 })
-    .withMessage("El documento debe tener 6 a 10 caracteres"),
+    const existeDocumento = await clienteRepository.obtenerPorDocumento(documentoIdentidad);
+    if (existeDocumento) {
+      return res.status(400).json({ exito: false, mensaje: "Ya existe un cliente con este documento" });
+    }
 
-  body("correoElectronico")
-    .notEmpty().withMessage("El correo electrónico es obligatorio")
-    .isEmail().withMessage("Debe ser un correo electrónico válido")
-    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|org)$/i)
-    .withMessage("El correo debe contener '@' y terminar en '.com', '.net', '.org',"),
+    const existeCorreo = await clienteRepository.obtenerPorEmail(correoElectronico);
+    if (existeCorreo) {
+      return res.status(400).json({ exito: false, mensaje: "Ya existe un cliente con este correo" });
+    }
 
-  body("telefono")
-    .notEmpty() 
-    .withMessage("El teléfono es obligatorio")
-    .isLength({min:10,max:10})
-    .withMessage("solo se permite 10 caracteres "),
+    const existeTelefono = await clienteRepository.obtenerPorTelefono(telefono);
+    if (existeTelefono) {
+      return res.status(400).json({ exito: false, mensaje: "Ya existe un cliente con este teléfono" });
+    }
 
-  body("direccion")
-    .optional()
-    .isLength({ min: 5, max: 200 })
-    .withMessage("La dirección debe tener entre 5 y 200 caracteres"),
+    next();
+  } catch (error) {
+    console.error("Error en la validación del cliente:", error);
+    res.status(500).json({ exito: false, mensaje: "Error interno del servidor" });
+  }
+}
 
-  body("genero")
-    .optional()
-    .isIn(["Masculino", "Femenino", "Otro"])
-    .withMessage("El género debe ser en mayuscula la primera palabra"),
 
-  body("contrasena").optional().isLength({ min: 6 }).withMessage("La contraseña debe tener al menos 6 caracteres"),
+export async function validarActualizacionCliente(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { documentoIdentidad, correoElectronico, telefono } = req.body;
 
-  (req, res, next) => {
-    const errores = validationResult(req)
+    // Validación de ID
+    const clienteActual = await clienteRepository.obtenerPorId(id);
+    if (!clienteActual) {
+      return res.status(404).json({ exito: false, mensaje: "Cliente no encontrado" });
+    }
+
+    // Validaciones de campos con express-validator
+    await Promise.all([
+      body("documentoIdentidad")
+        .optional()
+        .isLength({ min: 6, max: 10 }).withMessage("Debe tener entre 6 y 10 caracteres")
+        .run(req),
+
+      body("correoElectronico")
+        .optional()
+        .isEmail().withMessage("Debe ser un correo válido")
+        .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|org)$/i)
+        .withMessage("Debe terminar en '.com', '.net' o '.org'")
+        .run(req),
+
+      body("telefono")
+        .optional()
+        .isNumeric().withMessage("Debe contener solo números")
+        .isLength({ min: 10, max: 10 }).withMessage("Debe tener exactamente 10 caracteres")
+        .run(req),
+    ]);
+
+    const errores = validationResult(req);
     if (!errores.isEmpty()) {
-      return res.status(400).json({ errores: errores.array() })
+      return res.status(400).json({ exito: false, errores: errores.array() });
     }
-    next()
-  },
-]
 
-export const validarIdCliente = [
-  param("id").isInt().withMessage("El ID debe ser un número entero"),
-
-  (req, res, next) => {
-    const errores = validationResult(req)
-    if (!errores.isEmpty()) {
-      return res.status(400).json({ errores: errores.array() })
+    // Verificación de existencia en la base de datos
+    if (documentoIdentidad && documentoIdentidad !== clienteActual.documentoIdentidad) {
+      const existeDocumento = await clienteRepository.obtenerPorDocumento(documentoIdentidad);
+      if (existeDocumento) {
+        return res.status(400).json({ exito: false, mensaje: "Ya existe un cliente con este documento" });
+      }
     }
-    next()
-  },
-]
 
-export const validarCambioEstado = [
-  param("id").isInt().withMessage("El ID debe ser un número entero"),
-
-  body("estado")
-    .notEmpty()
-    .withMessage("El estado es obligatorio")
-    .isIn(["Activo", "Inactivo"])
-    .withMessage("El estado debe ser 'Activo' o 'Inactivo'"),
-
-  (req, res, next) => {
-    const errores = validationResult(req)
-    if (!errores.isEmpty()) {
-      return res.status(400).json({ errores: errores.array() })
+    if (correoElectronico && correoElectronico !== clienteActual.correoElectronico) {
+      const existeCorreo = await clienteRepository.obtenerPorEmail(correoElectronico);
+      if (existeCorreo) {
+        return res.status(400).json({ exito: false, mensaje: "Ya existe un cliente con este correo" });
+      }
     }
-    next()
-  },
-]
 
+    if (telefono && telefono !== clienteActual.telefono) {
+      const existeTelefono = await clienteRepository.obtenerPorTelefono(telefono);
+      if (existeTelefono) {
+        return res.status(400).json({ exito: false, mensaje: "Ya existe un cliente con este teléfono" });
+      }
+    }
+
+    return next();
+  } catch (error) {
+    console.error("Error en la validación del cliente:", error);
+    return res.status(500).json({ exito: false, mensaje: "Error interno del servidor" });
+  }
+}
+
+
+export async function validarIdCliente(req, res, next) {
+  try {
+    const { id } = req.params;
+    const cliente = await clienteRepository.obtenerPorId(id);
+
+    if (!cliente) {
+      return res.status(404).json({ exito: false, mensaje: "Cliente no encontrado" });
+    }
+
+    next();
+  } catch (error) {
+    console.error("Error en la validación del ID del cliente:", error);
+    res.status(500).json({ exito: false, mensaje: "Error interno del servidor" });
+  }
+}
+
+export async function validarCambioEstado(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    const cliente = await clienteRepository.obtenerPorId(id);
+    if (!cliente) {
+      return res.status(404).json({ exito: false, mensaje: "Cliente no encontrado" });
+    }
+
+    if (estado !== "activo" && estado !== "inactivo") {
+      return res.status(400).json({ exito: false, mensaje: "El estado debe ser 'activo' o 'inactivo'" });
+    }
+
+    next();
+  } catch (error) {
+    console.error("Error en la validación del cambio de estado del cliente:", error);
+    res.status(500).json({ exito: false, mensaje: "Error interno del servidor" });
+  }
+}

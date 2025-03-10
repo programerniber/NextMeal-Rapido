@@ -2,13 +2,16 @@ import { sequelize } from "../config/database.js"
 import Cliente from "./cliente-model.js"
 import Producto from "./producto-model.js"
 import Pedido from "./pedido-model.js"
-import DetallePedido from "./detalle_pedido-model.js"
+import Venta from "./venta-model.js"
+
 
 export const models = {
   Cliente,
   Producto,
   Pedido,
-  DetallePedido
+  Venta
+
+  
 }
 
 export const sincronizarModelos = async () => {

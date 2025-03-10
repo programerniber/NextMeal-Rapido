@@ -8,7 +8,7 @@ import { sincronizarModelos } from "./src/models/index.js"
 import router from "./src/routes/cliente-routes.js"
 import routerproducto from "./src/routes/producto-routes.js"
 import routerpedido from "./src/routes/pedido-routes.js"
-import routerDetallePedido from "./src/routes/detalle_pedido-routes.js"
+import routerVenta from "./src/routes/venta-routes.js"
 
 dotenv.config()
 
@@ -26,7 +26,7 @@ app.get("/api/test", (req, res) => {
 app.use("/api/clientes", router)
 app.use("/api/productos", routerproducto)
 app.use("/api/pedidos", routerpedido)
-app.use("/api/detallepedido", routerDetallePedido)
+app.use("/api/ventas", routerVenta)
 
 
 app.use(errorHandler) 
