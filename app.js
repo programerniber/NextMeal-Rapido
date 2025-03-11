@@ -3,6 +3,7 @@ import cors from "cors"
 import morgan from "morgan"
 import { errorHandler } from "./src/middlewares/errorHandler.js"
 import { connectDB } from "./src/config/database.js"
+import { Router } from "express"
 
 // Inicializar la aplicación
 const app = express()
