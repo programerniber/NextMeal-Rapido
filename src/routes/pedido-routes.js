@@ -1,29 +1,26 @@
-import express from 'express';
+import { Router } from "express";
 import { 
-  obtenerTodosLosPedidos, 
-  obtenerPedidoPorId, 
-  crearPedido, 
-  actualizarPedido, 
-  eliminarPedido, 
-  cambiarEstadoPedido 
-} from '../controllers/pedido-controller.js';
-
+  obtenerTodos, 
+  obtenerPorId, 
+  crearpedidos, 
+  actualizarpedidos, 
+  eliminarpedidos, 
+  cambiarEstadopedidos
+} from "../controllers/pedido-controller.js";
 import { 
   validarCreacionPedido, 
   validarActualizacionPedido, 
   validarIdPedido, 
   validarCambioEstadoPedido 
-} from '../middlewares/pedido-validator.js';
+} from "../middlewares/pedido-validator.js";
 
-const routerpedido = express.Router();
- 
- 
-routerpedido.get('/', obtenerTodosLosPedidos);
-routerpedido.get('/:id', validarIdPedido, obtenerPedidoPorId);
-routerpedido.post('/', validarCreacionPedido, crearPedido);
-routerpedido.put('/:id', validarIdPedido, validarActualizacionPedido, actualizarPedido);
-routerpedido.delete('/:id', validarIdPedido, eliminarPedido);
-routerpedido.patch('/:id/estado', validarCambioEstadoPedido, cambiarEstadoPedido);
+const routerpedido = Router();
 
-export default routerpedido; 
- 
+routerpedido.get("/", obtenerTodos);
+routerpedido.get("/:id", validarIdPedido, obtenerPorId);
+routerpedido.post("/", validarCreacionPedido, crearpedidos);
+routerpedido.put("/:id", validarIdPedido, validarActualizacionPedido, actualizarpedidos);
+routerpedido.delete("/:id", validarIdPedido, eliminarpedidos);
+routerpedido.patch("/:id/estado", validarIdPedido, validarCambioEstadoPedido, cambiarEstadopedidos);
+
+export default routerpedido;

@@ -18,6 +18,9 @@ export class ClienteRepository {
   async obtenerPorDocumento(documento) {
     return await Cliente.findOne({ where: { documentoIdentidad: documento } })
   }
+  async obtenerPorTelefono(telefono) {
+    return await Cliente.findOne({ where: { telefono: telefono } })
+  }
 
   async crear(clienteData) {
     return await Cliente.create(clienteData)

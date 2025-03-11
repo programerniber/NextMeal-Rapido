@@ -41,20 +41,17 @@ const Cliente = sequelize.define(
       allowNull: false,
     },
     genero: {
-      type: DataTypes.ENUM("Masculino", "Femenino", "Otro"),
+      type: DataTypes.ENUM("masculino", "femenino", "otro"),
       allowNull: false,
     },
-    contrasena: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
+ 
     fechaRegistro: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
     estado: {
-      type: DataTypes.ENUM("Activo", "Inactivo"),
-      defaultValue: "Activo",
+      type: DataTypes.ENUM("activo", "inactivo"),
+      defaultValue: "activo",
     },
   },
   { 
