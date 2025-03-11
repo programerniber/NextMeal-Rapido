@@ -1,4 +1,6 @@
 import app from "./app.js"
+import Usuario from "./src/models/usuario-model.js"
+import Rol from "./src/models/rol-model.js"
 
 const PORT = process.env.PORT || 3000
 

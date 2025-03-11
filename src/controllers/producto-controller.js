@@ -1,15 +1,30 @@
 
-import Product from "../module/product.js";
+import {ProductoService} from "../services/producto-services.js";
+const productoService = new ProductoService();
 
-export async function ObtenerProducto(req,res) {
-    try{
-        const product = await Product.findAll();
-        res.json(product);
-    }catch(error){
-        console.error(error);
-        res.status(500).json('Problemas para obtener los productos')
+export async function obtenerProductos(req, res) {
+    try {
+      const productos = await productoService.ObtenerProducto();
+      res.status(200).json({ exito: true, data: productos });
+    } catch (error) {
+      console.error("Error al obtener productos:", error);
+      res.status(500).json({ exito: false, mensaje: "Error interno del servidor" });
+    } 
+  }
+
+export async function obtenerProductoPorId(req, res) {
+    try {
+      const { id } = req.params;
+      const producto = await productoService.obtenerProductoPorId(id);
+      res.status(200).json({ exito: true, data: producto });
+    } catch (error) {
+      console.error("Error al obtener producto por ID:", error);
+      if (error.message === "Producto no encontrado") {
+        return res.status(404).json({ exito: false, mensaje: error.message });
+      }
+      res.status(500).json({ exito: false, mensaje: "Error interno del servidor" });
     }
-}
+  }
  
 export async function crearProducto(req, res) {
     try {
@@ -20,7 +35,7 @@ export async function crearProducto(req, res) {
             return res.status(400).json({ error: 'Todos los campos son obligatorios' });
         }
 
-        const nuevoProducto = await Product.create({
+        const nuevoProducto = await productoService.create({
             nombre_producto,
             cantidad,
             precio_producto
@@ -37,7 +52,7 @@ export async function actualizarProducto(req,res) {
     try{
         const id = req.params.id;
         const {nombre_producto, cantidad, precio_producto} =req.body;
-        const [actualizado]= await Product.update({
+        const [actualizado]= await productoService.update({
             nombre_producto,
             cantidad,
             precio_producto
@@ -58,7 +73,7 @@ export async function actualizarProducto(req,res) {
 export async function eliminarProducto(req,res) {
     try{
         const id = req.params.id;
-        const eliminado = await Product.destroy({
+        const eliminado = await productoService.destroy({
             where: {id},
         });
         if(eliminado){
