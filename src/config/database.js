@@ -9,6 +9,8 @@ export const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER,
   logging: console.log,
 })
 
+sequelize.sync()
+
 export const conectarDB = async () => {
   try {
     await sequelize.authenticate()

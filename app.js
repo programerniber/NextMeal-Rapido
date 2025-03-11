@@ -4,6 +4,8 @@ import morgan from "morgan"
 import dotenv from "dotenv"
 import { errorHandler } from "./src/middlewares/errorHandler.js"
 import { conectarDB } from "./src/config/database.js"
+import routercategoria from "./src/routes/categoria-routes.js"
+import routerautenticacion from "./src/routes/autenticacion-routes.js"
 import { sincronizarModelos } from "./src/models/index.js"
 import router from "./src/routes/cliente-routes.js"
 import routerproducto from "./src/routes/producto-routes.js"
@@ -28,6 +30,12 @@ app.use("/api/productos", routerproducto)
 app.use("/api/pedidos", routerpedido)
 app.use("/api/ventas", routerVenta)
 
+app.use('/api/autenticacion', routerautenticacion);
+app.use('/api/productos', routerproducto);
+app.use('/api/categoria', routercategoria);
+
+// Middleware de manejo de errores
+app.use(errorHandler)
 
 app.use(errorHandler) 
 
