@@ -8,7 +8,7 @@ import routercategoria from "./src/routes/categoria-routes.js"
 import routerautenticacion from "./src/routes/autenticacion-routes.js"
 import { sincronizarModelos } from "./src/models/index.js"
 import router from "./src/routes/cliente-routes.js"
-import routerproducto from "./src/routes/producto-routes.js"
+import routerproducto from "./src/routes/productos-routes.js"
 import routerpedido from "./src/routes/pedido-routes.js"
 import routerVenta from "./src/routes/venta-routes.js"
 
