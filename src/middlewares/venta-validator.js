@@ -9,10 +9,7 @@ const validarErrores = (req, res, next) => {
 };
 
 export const validarCreacionVenta = [
-  body("id_cliente")
-    .notEmpty().withMessage("El ID del cliente es obligatorio")
-    .isInt().withMessage("El ID del cliente debe ser un número entero"),
-
+  
   body("metodo_pago")
     .notEmpty().withMessage("El método de pago es obligatorio")
     .isIn(["efectivo", "transferencia"]).withMessage("Método de pago no válido. Debe ser 'efectivo' o 'transferencia'"),

@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
-import {sequelize} from '../config/database.js';
-import Rol from './rol-model.js'
+import { sequelize } from '../config/database.js';
+import Rol from './rol-model.js';
 
 const Usuario = sequelize.define('Usuario', {
   id: {
@@ -10,23 +10,24 @@ const Usuario = sequelize.define('Usuario', {
   },
   nombre: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: false
   },
   password: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  rolId: {
+  id_rol: {  // Cambio para coincidir con la BD
     type: DataTypes.INTEGER,
-    references:{model:Rol,key:'id'}
+    references: { model: Rol, key: 'id' },
   },
 });
 
-Usuario.belongsTo(Rol, { foreignKey: 'rolId' });
+Usuario.belongsTo(Rol, { foreignKey: 'id_rol' });
+Rol.hasMany(Usuario, { foreignKey: 'id_rol' });
 
 export default Usuario;

@@ -28,11 +28,14 @@ export const validarCreacionProducto=[
     .isIn(["activo", "inactivo"])
     .withMessage("El estado debe ser 'activo' o 'inactivo' "),
 
-
   body("descripcion")
-    .notEmpty()
-    .withMessage("la descipcion debe tener minimo 5 caracteres")
-    .isFloat({min:3}),
+  .notEmpty()
+  .withMessage("La descripción es obligatoria")
+  .isString()
+  .withMessage("La descripción debe ser una cadena de texto")
+  .isLength({ min: 5 })
+  .withMessage("La descripción debe tener al menos 5 caracteres"),
+
 
   (req, res, next) => {
     const errores = validationResult(req);
@@ -74,7 +77,7 @@ export const validarActualizacionProducto = [
   body("descripcion")
     .notEmpty()
     .withMessage("la descipcion debe tener minimo 5 caracteres")
-    .isFloat({min:3}),
+    .isLength({ min: 5 }),
 
   (req, res, next) => {
     const errores = validationResult(req);

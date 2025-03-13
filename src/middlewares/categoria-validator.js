@@ -4,6 +4,7 @@ export const validarCreacionCategoriaExistente = [
   body("nombreCategoria")
     .notEmpty()
     .withMessage("El nombre de categoria es obligatorio")
+    .isString().withMessage("El nombre debe ser un texto")
     .isLength({ min: 2, max: 50 })
     .withMessage("El nombre debe tener entre 2 a 50 caracteres"),
 
@@ -17,6 +18,7 @@ export const validarCreacionCategoriaExistente = [
 export const validacionActualizacionCategorias = [
   body("nombreCategoria")
     .optional()
+    .isString().withMessage("El nombre debe ser un texto")
     .isLength({ min: 2, max: 50 })
     .withMessage("El nombre debe tener entre 2 a 50 caracteres"),
 
