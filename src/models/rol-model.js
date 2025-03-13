@@ -1,5 +1,6 @@
+// Modelo de Rol
 import { DataTypes } from 'sequelize';
-import {sequelize} from '../config/database.js';
+import { sequelize } from '../config/database.js';
 
 const Rol = sequelize.define('Rol', {
   id: {
@@ -10,8 +11,11 @@ const Rol = sequelize.define('Rol', {
   nombre: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: false,
   },
+}, {
+  tableName: 'roles',
+  timestamps: false,
 });
 
 export default Rol;

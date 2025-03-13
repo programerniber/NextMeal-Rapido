@@ -1,7 +1,7 @@
 import Cliente from "../models/cliente-model.js"
 
 export class ClienteService {
-  async obtenerTodosLosClientes() {
+  async ObtenerTodosLosClientes() {
     return await Cliente.findAll()
   }
  

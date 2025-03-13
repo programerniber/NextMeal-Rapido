@@ -1,6 +1,6 @@
 import Pedido from "../models/pedido-model.js";
 import Cliente from "../models/cliente-model.js";
-import Producto from "../models/producto-model.js";
+import Producto from "../models/poductos-model.js";
 
 export class PedidoService {
   

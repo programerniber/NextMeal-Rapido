@@ -11,22 +11,22 @@ id:{
 nombre:{
     type: DataTypes.STRING,
     allowNull:false,
-    unique:true
+    unique:false
 },
 precio:{
     type: DataTypes.INTEGER,
     allowNull: false
 },
  estado:{
-    type: DataTypes.BOOLEAN,
-    defaultValue: true
+    type: DataTypes.ENUM("activo", "inactivo"),
+    defaultValue: "activo",
 },
 cantidad:{
     type:DataTypes.FLOAT,
     allowNull:true
 },
 descripcion:{
-    type:DataTypes.TEXT,
+    type:DataTypes.STRING,
     allowNull:true
 },
 
@@ -37,7 +37,7 @@ Id_Categoria:{
 
 },
 {
-    timetamps:true,
+    timestamps:true,
 });
 
 Producto.belongsTo(Categoria, { foreignKey: 'Id_Categoria' });

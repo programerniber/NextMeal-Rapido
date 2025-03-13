@@ -1,6 +1,6 @@
 import { sequelize } from "../config/database.js"
 import Cliente from "./cliente-model.js"
-import Producto from "./producto-model.js"
+import Producto from "./poductos-model.js"
 import Pedido from "./pedido-model.js"
 import Venta from "./venta-model.js"
 

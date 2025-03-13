@@ -11,6 +11,7 @@ import router from "./src/routes/cliente-routes.js"
 import routerproducto from "./src/routes/productos-routes.js"
 import routerpedido from "./src/routes/pedido-routes.js"
 import routerVenta from "./src/routes/venta-routes.js"
+import routerol from "./src/routes/rol-routes.js"
 
 dotenv.config()
 
@@ -33,6 +34,7 @@ app.use("/api/ventas", routerVenta)
 app.use('/api/autenticacion', routerautenticacion);
 app.use('/api/productos', routerproducto);
 app.use('/api/categoria', routercategoria);
+app.use('/api/rol', routerol);
 
 // Middleware de manejo de errores
 app.use(errorHandler)

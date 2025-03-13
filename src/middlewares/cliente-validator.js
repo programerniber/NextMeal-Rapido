@@ -7,10 +7,12 @@ export async function validarCreacionCliente(req, res, next) {
   try {
     await Promise.all([
       body("nombreCompleto")
+        
         .notEmpty().withMessage("El nombre completo es obligatorio")
+        .isString().withMessage("El nombre debe ser un texto")
         .isLength({ min: 3, max: 100 }).withMessage("Debe tener entre 3 y 100 caracteres")
         .run(req),
-
+        
       body("tipoDocumento")
         .optional()
         .isIn(["cc", "tarjeta identidad", "passport"])
@@ -94,6 +96,7 @@ export async function validarActualizacionCliente(req, res, next) {
     await Promise.all([
       body("documentoIdentidad")
         .optional()
+        .isString().withMessage("El nombre debe ser un texto")
         .isLength({ min: 6, max: 10 }).withMessage("Debe tener entre 6 y 10 caracteres")
         .run(req),
 
