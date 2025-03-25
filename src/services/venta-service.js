@@ -34,32 +34,33 @@ export class VentaService {
 
   async crear(ventaData) {
     try {
-      
-      const pedido = await Pedido.findByPk(ventaData.id_pedido);
-      if (!pedido) {
-        throw new Error("El pedido no existe.");
-      }
+        const pedido = await Pedido.findByPk(ventaData.id_pedido);
+        if (!pedido) {
+            throw new Error("El pedido no existe.");
+        }
 
-      
-      ventaData.total_pagar = pedido.total;
-      
-      
-      if (ventaData.total_pagar <= 0) {
-        throw new Error("El total de la venta debe ser mayor a 0.");
-      }
+        if (pedido.estado !== "terminado") {
+            throw new Error("No se puede realizar la venta. El pedido no está terminado.");
+        }
 
-      
-      const metodosValidos = ["efectivo", "transferencia"];
-      if (!metodosValidos.includes(ventaData.metodo_pago)) {
-        throw new Error("Método de pago no válido.");
-      }
+        ventaData.total_pagar = pedido.total;
 
-      return await this.ventaRepository.crear(ventaData);
+        if (ventaData.total_pagar <= 0) {
+            throw new Error("El total de la venta debe ser mayor a 0.");
+        }
+
+        const metodosValidos = ["efectivo", "transferencia"];
+        if (!metodosValidos.includes(ventaData.metodo_pago)) {
+            throw new Error("Método de pago no válido.");
+        }
+
+        return await this.ventaRepository.crear(ventaData);
     } catch (error) {
-      console.error("Error en servicio crear:", error);
-      throw error;
+        console.error("Error en servicio crear:", error);
+        throw error;
     }
-  }
+}
+
 
   async actualizar(id, ventaData) {
     try {

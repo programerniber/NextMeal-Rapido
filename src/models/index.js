@@ -3,13 +3,15 @@ import Cliente from "./cliente-model.js"
 import Producto from "./poductos-model.js"
 import Pedido from "./pedido-model.js"
 import Venta from "./venta-model.js"
+import  Permiso  from "./permiso-model.js"
 
 
 export const models = {
   Cliente,
   Producto,
   Pedido,
-  Venta
+  Venta,
+  Permiso
 
   
 }

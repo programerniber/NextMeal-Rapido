@@ -29,8 +29,8 @@ export const validarCreacionPedido = [
 
   body("estado")
     .optional()
-    .isIn(["pendiente", "preparacion", "entregado", "cancelado"])
-    .withMessage("Estado no válido. Debe ser: 'pendiente', 'preparacion', 'entregado' o 'cancelado'"),
+    .isIn(["pendiente", "preparacion", "terminado", "cancelado"])
+    .withMessage("Estado no válido. Debe ser: 'pendiente', 'preparacion', 'terminado' o 'cancelado'"),
 
   validarErrores,
 ];
@@ -54,8 +54,8 @@ export const validarActualizacionPedido = [
 
   body("estado")
     .optional()
-    .isIn(["pendiente", "preparacion", "entregado", "cancelado"])
-    .withMessage("Estado no válido. Debe ser: 'pendiente', 'preparacion', 'entregado' o 'cancelado'"),
+    .isIn(["pendiente", "preparacion", "terminado", "cancelado"])
+    .withMessage("Estado no válido. Debe ser: 'pendiente', 'preparacion', 'terminado' o 'cancelado'"),
 
   validarErrores,
 ];
@@ -73,7 +73,7 @@ export const validarCambioEstadoPedido = [
 
   body("estado")
     .notEmpty().withMessage("El estado del pedido es obligatorio")
-    .isIn(["pendiente", "preparacion", "entregado", "cancelado"])
+    .isIn(["pendiente", "preparacion", "terminado", "cancelado"])
     .withMessage("Estado no válido. Debe ser: 'pendiente', 'preparacion', 'entregado' o 'cancelado'"),
 
   validarErrores,

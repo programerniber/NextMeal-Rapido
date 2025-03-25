@@ -13,24 +13,38 @@ import {
   validarIdPedido,
   validarCambioEstadoPedido,
 } from "../middlewares/pedido-validator.js"
-import { autenticar, autorizarAdmin } from "../middlewares/autenticador-validator.js"
+import { autenticar, autorizarAdmin, verificarPermiso } from "../middlewares/autenticador-validator.js"
 
 const routerpedido = Router()
 
-
 routerpedido.get("/", autenticar, obtenerTodos)
 routerpedido.get("/:id", autenticar, validarIdPedido, obtenerPorId)
-routerpedido.post("/", autenticar, autorizarAdmin, validarCreacionPedido, crearpedidos)
-routerpedido.put("/:id", autenticar, autorizarAdmin, validarIdPedido, validarActualizacionPedido, actualizarpedidos)
-routerpedido.delete("/:id", autenticar, autorizarAdmin, validarIdPedido, eliminarpedidos)
+routerpedido.post("/", 
+  autenticar, 
+  verificarPermiso("pedidos", "crear"), 
+  validarCreacionPedido, 
+  crearpedidos
+)
+routerpedido.put("/:id", 
+  autenticar, 
+  verificarPermiso("pedidos", "editar"), 
+  validarIdPedido, 
+  validarActualizacionPedido, 
+  actualizarpedidos
+)
+routerpedido.delete("/:id", 
+  autenticar, 
+  autorizarAdmin, // Mantener solo admin para eliminar
+  validarIdPedido, 
+  eliminarpedidos
+)
 routerpedido.patch(
   "/:id/estado",
   autenticar,
-  autorizarAdmin,
+  verificarPermiso("pedidos", "editar"),
   validarIdPedido,
   validarCambioEstadoPedido,
-  cambiarEstadopedidos,
+  cambiarEstadopedidos
 )
 
 export default routerpedido
-

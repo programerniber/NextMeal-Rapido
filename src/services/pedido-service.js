@@ -49,7 +49,7 @@ export class PedidoService {
   async eliminarpedidos(id) {
     const pedido = await this.obtenerPorId(id);
     
-    if (pedido.estado === "entregado") {
+    if (pedido.estado === "terminado") {
       throw new Error("No se puede eliminar un pedido que ya fue entregado");
     }
 
@@ -60,7 +60,7 @@ export class PedidoService {
   async cambiarEstadopedidos(id, estado) {
     const pedido = await this.obtenerPorId(id);
 
-    const estadosValidos = ["pendiente", "preparacion", "entregado", "cancelado"];
+    const estadosValidos = ["pendiente", "preparacion", "terminado", "cancelado"];
     if (!estadosValidos.includes(estado)) {
       throw new Error("Estado no válido");
     }
