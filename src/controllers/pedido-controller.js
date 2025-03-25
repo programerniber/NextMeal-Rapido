@@ -115,7 +115,7 @@ export async function eliminarpedidos(req, res) {
     }
 
     // Verificar si el pedido ya fue entregado
-    if (pedido.estado === "entregado") {
+    if (pedido.estado === "terminado") {
       return res.status(400).json({
         exito: false,
         mensaje: "No se puede eliminar un pedido que ya fue entregado",
@@ -144,7 +144,7 @@ export async function cambiarEstadopedidos(req, res) {
     const { estado } = req.body
 
     // Validar que el estado sea válido
-    const estadosValidos = ["pendiente", "preparacion", "entregado", "cancelado"]
+    const estadosValidos = ["pendiente", "preparacion", "terminado", "cancelado"]
     if (!estadosValidos.includes(estado)) {
       return res.status(400).json({
         exito: false,

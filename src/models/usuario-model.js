@@ -23,6 +23,7 @@ const Usuario = sequelize.define('Usuario', {
   },
   id_rol: {  // Cambio para coincidir con la BD
     type: DataTypes.INTEGER,
+    allowNull: false,
     references: { model: Rol, key: 'id' },
   },
 });

@@ -12,15 +12,30 @@ import {
   validarIdCategoria,
 } from "../middlewares/categoria-validator.js"
 
-import { autenticar, autorizarAdmin } from "../middlewares/autenticador-validator.js"
+import { autenticar, autorizarAdmin, verificarPermiso } from "../middlewares/autenticador-validator.js"
 
 const routercategoria = Router()
 
 routercategoria.get("/", autenticar, obtenerTodasLasCategorias)
 routercategoria.get("/:id", autenticar, validarIdCategoria, obtenerCategoriaPorId)
-routercategoria.post("/", autenticar, autorizarAdmin, validarCreacionCategoriaExistente, crearCategoria)
-routercategoria.put("/:id",autenticar,autorizarAdmin,validacionActualizacionCategorias,validarIdCategoria,actualizarCategoria,)
-routercategoria.delete("/:id", autenticar, autorizarAdmin, validarIdCategoria, eliminarCategoria)
+routercategoria.post("/", 
+  autenticar, 
+  verificarPermiso("categorias", "crear"), 
+  validarCreacionCategoriaExistente, 
+  crearCategoria
+)
+routercategoria.put("/:id",
+  autenticar,
+  verificarPermiso("categorias", "editar"),
+  validacionActualizacionCategorias,
+  validarIdCategoria,
+  actualizarCategoria
+)
+routercategoria.delete("/:id", 
+  autenticar, 
+  autorizarAdmin, // Mantener solo admin para eliminar
+  validarIdCategoria, 
+  eliminarCategoria
+)
 
 export default routercategoria
-
