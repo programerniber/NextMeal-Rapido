@@ -66,7 +66,7 @@ Venta.beforeCreate(async (venta) => {
       venta.id_cliente = pedido.id_cliente;
       venta.id_producto = pedido.id_producto;
 
-      await pedido.update({ estado: "entregado" });
+      await pedido.update({ estado: "terminado" });
     }
   }
 });

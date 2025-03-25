@@ -58,7 +58,7 @@ export class PedidoRepository {
     const pedido = await Pedido.findByPk(id);
     if (!pedido) return null;
 
-    const estadosValidos = ["pendiente", "preparacion", "entregado", "cancelado"];
+    const estadosValidos = ["pendiente", "preparacion", "terminado", "cancelado"];
     if (!estadosValidos.includes(nuevoEstado)) {
       throw new Error("Estado no válido");
     }

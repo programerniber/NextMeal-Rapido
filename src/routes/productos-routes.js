@@ -1,12 +1,13 @@
 import { Router } from "express"
 import {
   obtenerProductos,
-  crearProductos,
   obtenerProductoPorID,
+  crearProductos,
   actualizarProductos,
   eliminarProductos,
 } from "../controllers/productos-controller.js"
-import { autenticar, autorizarAdmin } from "../middlewares/autenticador-validator.js"
+import { autenticar } from "../middlewares/autenticador-validator.js"
+import { verificarPermiso } from "../middlewares/permiso-validator.js"
 import {
   validarCreacionProducto,
   validarActualizacionProducto,
@@ -15,19 +16,20 @@ import {
 
 const routerproducto = Router()
 
+// Rutas públicas o que solo requieren autenticación
+routerproducto.get("/", obtenerProductos)
+routerproducto.get("/:id", validarIdProducto, obtenerProductoPorID)
 
-routerproducto.get("/", autenticar, obtenerProductos)
-routerproducto.get("/:id", autenticar, validarIdProducto, obtenerProductoPorID)
-routerproducto.post("/", autenticar, autorizarAdmin, validarCreacionProducto, crearProductos)
+// Rutas que requieren autenticación y permisos específicos
+routerproducto.post("/", autenticar, verificarPermiso("productos", "crear"), validarCreacionProducto, crearProductos)
 routerproducto.put(
   "/:id",
   autenticar,
-  autorizarAdmin,
+  verificarPermiso("productos", "editar"),
   validarIdProducto,
   validarActualizacionProducto,
-  actualizarProductos,
+  actualizarProductos
 )
-routerproducto.delete("/:id", autenticar, autorizarAdmin, validarIdProducto, eliminarProductos)
+routerproducto.delete("/:id", autenticar, verificarPermiso("productos", "eliminar"), validarIdProducto, eliminarProductos)
 
 export default routerproducto
-

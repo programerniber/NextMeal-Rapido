@@ -61,7 +61,7 @@ const Pedido = sequelize.define(
     },
 
     estado: {
-      type: DataTypes.ENUM("pendiente", "preparacion", "entregado", "cancelado"),
+      type: DataTypes.ENUM("pendiente", "preparacion", "terminado", "cancelado"),
       allowNull: false,
       defaultValue: "pendiente",
     },

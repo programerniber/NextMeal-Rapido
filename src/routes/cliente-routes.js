@@ -13,17 +13,36 @@ import {
   validarIdCliente,
   validarCambioEstado,
 } from "../middlewares/cliente-validator.js"
-import { autenticar, autorizarAdmin } from "../middlewares/autenticador-validator.js"
+import { autenticar, autorizarAdmin, verificarPermiso } from "../middlewares/autenticador-validator.js"
 
 const router = Router()
 
-
 router.get("/", autenticar, obtenerTodosLosClientes)
 router.get("/:id", autenticar, validarIdCliente, obtenerClientePorId)
-router.post("/", autenticar, autorizarAdmin, validarCreacionCliente, crearCliente)
-router.put("/:id", autenticar, autorizarAdmin, validarIdCliente, validarActualizacionCliente, actualizarCliente)
-router.delete("/:id", autenticar, autorizarAdmin, validarIdCliente, eliminarCliente)
-router.patch("/:id/estado", autenticar, autorizarAdmin, validarCambioEstado, cambiarEstadoCliente)
+router.post("/", 
+  autenticar, 
+  verificarPermiso("clientes", "crear"), 
+  validarCreacionCliente, 
+  crearCliente
+)
+router.put("/:id", 
+  autenticar, 
+  verificarPermiso("clientes", "editar"), 
+  validarIdCliente, 
+  validarActualizacionCliente, 
+  actualizarCliente
+)
+router.delete("/:id", 
+  autenticar, 
+  autorizarAdmin, // Mantener solo admin para eliminar
+  validarIdCliente, 
+  eliminarCliente
+)
+router.patch("/:id/estado", 
+  autenticar, 
+  verificarPermiso("clientes", "editar"), 
+  validarCambioEstado, 
+  cambiarEstadoCliente
+)
 
 export default router
-

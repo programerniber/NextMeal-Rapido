@@ -47,20 +47,20 @@ export class VentaRepository {
   }
 
   async crear(ventaData) {
-   
-    const nuevaVenta = await Venta.create(ventaData);
-    
-    
-    if (ventaData.id_pedido) {
-      const pedido = await Pedido.findByPk(ventaData.id_pedido);
-      if (pedido) {
-        await pedido.update({ estado: "entregado" });
-      }
+    const pedido = await Pedido.findByPk(ventaData.id_pedido);
+    if (!pedido) {
+      throw new Error("El pedido no existe.");
     }
-    
-    
+
+    if (pedido.estado !== "terminado") {
+      throw new Error("No se puede realizar la venta. El pedido no está terminado.");
+    }
+
+    const nuevaVenta = await Venta.create(ventaData);
+
     return await this.obtenerPorId(nuevaVenta.id);
-  }
+}
+
 
   async actualizar(id, ventaData) {
     const venta = await Venta.findByPk(id);
