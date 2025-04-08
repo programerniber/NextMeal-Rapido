@@ -21,15 +21,19 @@ routerproducto.get("/", obtenerProductos)
 routerproducto.get("/:id", validarIdProducto, obtenerProductoPorID)
 
 // Rutas que requieren autenticación y permisos específicos
-routerproducto.post("/", autenticar, verificarPermiso("productos", "crear"), validarCreacionProducto, crearProductos)
+routerproducto.post("/", //autenticar, 
+  //verificarPermiso("productos", "crear"),
+   validarCreacionProducto, crearProductos)
 routerproducto.put(
   "/:id",
-  autenticar,
-  verificarPermiso("productos", "editar"),
+ // autenticar,
+  //verificarPermiso("productos", "editar"),
   validarIdProducto,
   validarActualizacionProducto,
   actualizarProductos
 )
-routerproducto.delete("/:id", autenticar, verificarPermiso("productos", "eliminar"), validarIdProducto, eliminarProductos)
+routerproducto.delete("/:id", //autenticar,
+   //verificarPermiso("productos", "eliminar"), 
+   validarIdProducto, eliminarProductos)
 
 export default routerproducto
