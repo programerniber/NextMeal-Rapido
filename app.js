@@ -37,7 +37,7 @@ app.use('/api/autenticacion', routerautenticacion);
 app.use('/api/categoria', routercategoria);
 app.use('/api/rol', routerol);
 app.use('/api/permiso', routerPermiso);
-app.use('/api/usuario', routerautenticacion);
+
 
 // Middleware de manejo de errores
 app.use(errorHandler)

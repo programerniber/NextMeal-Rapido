@@ -18,7 +18,8 @@ const routerproducto = Router()
 
 // Rutas públicas o que solo requieren autenticación
 routerproducto.get("/", obtenerProductos)
-routerproducto.get("/:id", validarIdProducto, obtenerProductoPorID)
+routerproducto.get("/:id", //validarIdProducto, 
+  obtenerProductoPorID)
 
 // Rutas que requieren autenticación y permisos específicos
 routerproducto.post("/", //autenticar, 
