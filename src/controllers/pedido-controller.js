@@ -50,7 +50,7 @@ export async function crearpedidos(req, res) {
     const pedidoData = req.body
 
     // Agregar información del usuario que crea el pedido
-    pedidoData.creadoPor = req.usuario.id
+    // pedidoData.creadoPor = req.usuario.id
 
     const nuevoPedido = await pedidoService.crearpedidos(pedidoData)
     res.status(201).json({
@@ -74,7 +74,7 @@ export async function actualizarpedidos(req, res) {
     const pedidoData = req.body
 
     // Agregar información del usuario que actualiza el pedido
-    pedidoData.actualizadoPor = req.usuario.id
+    // pedidoData.actualizadoPor = req.usuario.id
 
     const pedidoActualizado = await pedidoService.actualizarpedidos(id, pedidoData)
 

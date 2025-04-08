@@ -7,12 +7,12 @@ import {
   eliminarRol
 } from "../controllers/rol-controller.js";
 
-const router = Router();
+const routerol = Router();
 
-router.get("/", obtenerRoles);
-router.get("/:id", obtenerRolPorId);
-router.post("/", crearRol);
-router.put("/:id", actualizarRol);
-router.delete("/:id", eliminarRol);
+routerol.get("/", obtenerRoles);
+routerol.get("/:id", obtenerRolPorId);
+routerol.post("/", crearRol);
+routerol.put("/:id", actualizarRol);
+routerol.delete("/:id", eliminarRol);
 
-export default router;
+export default routerol;

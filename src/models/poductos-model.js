@@ -21,10 +21,6 @@ precio:{
     type: DataTypes.ENUM("activo", "inactivo"),
     defaultValue: "activo",
 },
-cantidad:{
-    type:DataTypes.FLOAT,
-    allowNull:true
-},
 descripcion:{
     type:DataTypes.STRING,
     allowNull:true

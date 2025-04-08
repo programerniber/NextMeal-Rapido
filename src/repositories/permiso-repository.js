@@ -9,14 +9,14 @@ class PermisoRepository {
     return await Permiso.findByPk(id);
   }
 
-  async crear(permisoData) {
-    return await Permiso.create(permisoData);
+  async crear(datosPermiso) {
+    return await Permiso.create(datosPermiso);
   }
 
-  async actualizar(id, permisoData) {
+  async actualizar(id, datosActualizados) {
     const permiso = await Permiso.findByPk(id);
     if (!permiso) return null;
-    return await permiso.update(permisoData);
+    return await permiso.update(datosActualizados);
   }
 
   async eliminar(id) {

@@ -16,11 +16,6 @@ export const validarCreacionProducto=[
     .isFloat({ min: 0.01 })
     .withMessage("El precio debe ser un número mayor a 0"),
 
-  body("cantidad")
-    .notEmpty()
-    .withMessage("El stock es obligatorio")
-    .isInt({ min: 0 })
-    .withMessage("El stock debe ser un número entero mayor o igual a 0"),
     
   body("estado")
     .notEmpty()
@@ -61,11 +56,7 @@ export const validarActualizacionProducto = [
     .isFloat({ min: 0.01 })
     .withMessage("El precio debe ser un número mayor a 0"),
 
-  body("cantidad")
-    .notEmpty()
-    .withMessage("El cantidad del producto es obligatorio")
-    .isInt({ min: 0 })
-    .withMessage("El stock debe ser un número entero mayor o igual a 0"),
+ 
     
   body("estado")
     .notEmpty()

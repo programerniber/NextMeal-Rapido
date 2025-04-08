@@ -34,9 +34,9 @@ export async function obtenerClientePorId(req, res) {
 export async function crearCliente(req, res) {
   try {
     const clienteData = req.body
-
+    
     // Agregar información del usuario que crea el cliente
-    clienteData.creadoPor = req.usuario.id
+    //clienteData.creadoPor = req.usuario.id
 
     const nuevoCliente = await clienteService.crearCliente(clienteData)
     res.status(201).json({
@@ -59,7 +59,7 @@ export async function actualizarCliente(req, res) {
     const clienteData = req.body
 
     // Agregar información del usuario que actualiza el cliente
-    clienteData.actualizadoPor = req.usuario.id
+    //clienteData.actualizadoPor = req.usuario.id
 
     const clienteActualizado = await clienteService.actualizarCliente(id, clienteData)
 

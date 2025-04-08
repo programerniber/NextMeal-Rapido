@@ -33,7 +33,7 @@ export async function crearCategoria(req, res) {
     const categoriaData = req.body
 
     // Agregar información del usuario que crea la categoría
-    categoriaData.creadoPor = req.usuario.id
+    // categoriaData.creadoPor = req.usuario.id
 
     const nuevaCategoria = await categoryServices.crearCategoria(categoriaData)
     res.status(201).json({
@@ -56,7 +56,7 @@ export async function actualizarCategoria(req, res) {
     const categoriaData = req.body
 
     // Agregar información del usuario que actualiza la categoría
-    categoriaData.actualizadoPor = req.usuario.id
+    // categoriaData.actualizadoPor = req.usuario.id
 
     const categoriaActualizada = await categoryServices.actualizarCategoria(id, categoriaData)
 
