@@ -1,14 +1,21 @@
 import { body, param, validationResult } from "express-validator";
+ 
 
-export const validarCreacionProducto=[
-
+export const validarCreacionProducto = [
   body("nombre")
     .notEmpty()
     .withMessage("El nombre del producto es obligatorio")
     .isString()
     .withMessage("El nombre debe ser una cadena de texto")
-    .isLength({ min: 3, max: 50 })
+    .isLength({ min: 3, max: 100 })
     .withMessage("El nombre debe tener entre 3 y 100 caracteres"),
+
+  body("descripcion")
+    .optional()
+    .isString()
+    .withMessage("La descripción debe ser una cadena de texto")
+    .isLength({ max: 500 })
+    .withMessage("La descripción no puede superar los 500 caracteres"),
 
   body("precio")
     .notEmpty()
@@ -16,21 +23,11 @@ export const validarCreacionProducto=[
     .isFloat({ min: 0.01 })
     .withMessage("El precio debe ser un número mayor a 0"),
 
-    
-  body("estado")
+  body("stock")
     .notEmpty()
-    .withMessage("El estado del producto es obligatorio")
-    .isIn(["activo", "inactivo"])
-    .withMessage("El estado debe ser 'activo' o 'inactivo' "),
-
-  body("descripcion")
-  .notEmpty()
-  .withMessage("La descripción es obligatoria")
-  .isString()
-  .withMessage("La descripción debe ser una cadena de texto")
-  .isLength({ min: 5 })
-  .withMessage("La descripción debe tener al menos 5 caracteres"),
-
+    .withMessage("El stock es obligatorio")
+    .isInt({ min: 0 })
+    .withMessage("El stock debe ser un número entero mayor o igual a 0"),
 
   (req, res, next) => {
     const errores = validationResult(req);
@@ -43,32 +40,28 @@ export const validarCreacionProducto=[
 
 export const validarActualizacionProducto = [
   body("nombre")
-    .notEmpty()
-    .withMessage("El nombre del producto es obligatorio")
+    .optional()
     .isString()
     .withMessage("El nombre debe ser una cadena de texto")
-    .isLength({ min: 3, max: 50 })
+    .isLength({ min: 3, max: 100 })
     .withMessage("El nombre debe tener entre 3 y 100 caracteres"),
 
+  body("descripcion")
+    .optional()
+    .isString()
+    .withMessage("La descripción debe ser una cadena de texto")
+    .isLength({ max: 500 })
+    .withMessage("La descripción no puede superar los 500 caracteres"),
+
   body("precio")
-    .notEmpty()
-    .withMessage("El precio es obligatorio")
+    .optional()
     .isFloat({ min: 0.01 })
     .withMessage("El precio debe ser un número mayor a 0"),
 
- 
-    
-  body("estado")
-    .notEmpty()
-    .withMessage("El estado del producto es obligatorio")
-    .isIn(["activo", "inactivo"])
-    .withMessage("El estado debe ser 'activo' o 'inactivo' "),
-
-
-  body("descripcion")
-    .notEmpty()
-    .withMessage("la descipcion debe tener minimo 5 caracteres")
-    .isLength({ min: 5 }),
+  body("stock")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("El stock debe ser un número entero mayor o igual a 0"),
 
   (req, res, next) => {
     const errores = validationResult(req);

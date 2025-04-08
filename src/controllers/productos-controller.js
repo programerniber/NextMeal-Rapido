@@ -34,9 +34,9 @@ export async function obtenerProductoPorID(req, res) {
 
 export async function crearProductos(req, res) {  
   try {
-    const { nombre, precio, estado, cantidad, descripcion, Id_Categoria } = req.body;
+    const { nombre, precio, estado,  descripcion, Id_Categoria } = req.body;
 
-    if (!nombre || !precio || !estado || !cantidad || !descripcion || !Id_Categoria) {
+    if (!nombre || !precio || !estado || !descripcion || !Id_Categoria) {
       return res.status(400).json({  
         exito: false,
         mensaje: "Todos los campos son obligatorios",
@@ -47,10 +47,9 @@ export async function crearProductos(req, res) {
       nombre,
       precio,
       estado,
-      cantidad,
       descripcion,
       Id_Categoria,
-      creadoPor: req.usuario?.id || null,
+      // creadoPor: req.usuario?.id || null,
     };
 
     const nuevoProducto = await productoService.crearProducto(productoData); 
@@ -77,7 +76,7 @@ export async function actualizarProductos(req, res) {
     const productoData = req.body
 
     // Validar si req.usuario está definido antes de acceder a id
-    productoData.actualizadoPor = req.usuario?.id || null
+    // productoData.actualizadoPor = req.usuario?.id || null
 
     // 🔹 Llamar correctamente a la función del servicio
     const productoActualizado = await productoService.actualizarProducto(id, productoData)
@@ -97,43 +96,13 @@ export async function actualizarProductos(req, res) {
   }
 }
 
-
-export async function eliminarProductos(req, res) {
+export const eliminarProductos = async (req, res) => {
   try {
-    const { id } = req.params
-
-    
-    const producto = await productoService.obtenerProductoPorId(id)
-
-    if (!producto) {
-      return res.status(404).json({
-        exito: false,
-        mensaje: "Producto no encontrado",
-      })
-    }
-
-    const eliminado = await productoService.destroy({
-      where: { id },
-    })
-
-    if (eliminado === 0) {
-      return res.status(404).json({
-        exito: false,
-        mensaje: "Producto no encontrado",
-      })
-    }
-
-    res.status(200).json({
-      exito: true,
-      mensaje: "Producto eliminado exitosamente",
-    })
+    const id = Number(req.params.id); // 👈 conversión clave
+    const resultado = await productoService.eliminarProducto(id);
+    res.json(resultado);
   } catch (error) {
-    console.error("Error al eliminar producto:", error)
-    res.status(500).json({
-      exito: false,
-      mensaje: "Error al eliminar el producto",
-      error: error.message,
-    })
+    console.error("Error al eliminar producto:", error);
+    res.status(500).json({ mensaje: error.message });
   }
-}
-
+};

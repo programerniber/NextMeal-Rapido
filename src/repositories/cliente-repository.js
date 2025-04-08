@@ -1,5 +1,9 @@
 import Cliente from "../models/cliente-model.js"
 
+export const obtenerPorEstado = async() => {
+  return await Cliente.findAll({ where: { estado: "activo" } })
+}
+
 export class ClienteRepository {
   async obtenerTodos() {
     return await Cliente.findAll({
@@ -21,6 +25,7 @@ export class ClienteRepository {
   async obtenerPorTelefono(telefono) {
     return await Cliente.findOne({ where: { telefono: telefono } })
   }
+
 
   async crear(clienteData) {
     return await Cliente.create(clienteData)
