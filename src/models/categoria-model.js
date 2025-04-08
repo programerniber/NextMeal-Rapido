@@ -15,6 +15,10 @@ const Categoria = sequelize.define('Categoria',{
  estado:{
     type: DataTypes.BOOLEAN,
     defaultValue:true
+ },
+ descripcion:{
+   type: DataTypes.STRING,
+   allowNull: false
  }
 
 });

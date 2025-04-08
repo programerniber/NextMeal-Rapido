@@ -7,7 +7,7 @@ import {
   eliminarCategoria,
 } from "../controllers/categoria-controller.js"
 import {
-  validarCreacionCategoriaExistente,
+  createValidation,
   validacionActualizacionCategorias,
   validarIdCategoria,
 } from "../middlewares/categoria-validator.js"
@@ -16,29 +16,29 @@ import { autenticar, autorizarAdmin, verificarPermiso } from "../middlewares/aut
 
 const routercategoria = Router()
 
-routercategoria.get("/", 
-  // autenticar,
-   obtenerTodasLasCategorias)
-routercategoria.get("/:id", 
-  // autenticar, validarIdCategoria, 
-  obtenerCategoriaPorId)
+routercategoria.get("/", //autenticar, 
+  obtenerTodasLasCategorias)
+
+routercategoria.get("/:id", //autenticar, 
+//validarIdCategoria, 
+obtenerCategoriaPorId)
 routercategoria.post("/", 
-  // autenticar, 
-  // verificarPermiso("categorias", "crear"), 
-  // validarCreacionCategoriaExistente, 
+  //autenticar, 
+  //verificarPermiso("categorias", "crear"), 
+  createValidation, 
   crearCategoria
 )
 routercategoria.put("/:id",
-  // autenticar,
-  // verificarPermiso("categorias", "editar"),
-  // validacionActualizacionCategorias,
-  // validarIdCategoria,
+  //autenticar,
+  //verificarPermiso("categorias", "editar"),
+  //validacionActualizacionCategorias,
+  //validarIdCategoria,
   actualizarCategoria
 )
 routercategoria.delete("/:id", 
-  // autenticar, 
-  // autorizarAdmin, // Mantener solo admin para eliminar
-  // validarIdCategoria, 
+  //autenticar, 
+  //autorizarAdmin, // Mantener solo admin para eliminar
+  //validarIdCategoria, 
   eliminarCategoria
 )
 

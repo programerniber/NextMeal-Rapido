@@ -7,7 +7,7 @@ export class ProductoRepository{
         })
     }
     async obtenerPorId(id){
-        return await Producto.findBypk(id)
+        return await Producto.findByPk(id)
     }
 
     async obtenerPorNombre(nombre){
@@ -19,14 +19,14 @@ export class ProductoRepository{
     }
 
     async actualizar(id, productoData){
-        const producto= await Producto.findBypk(id)
+        const producto= await Producto.findByPk(id)
         if(!producto) return null
         
         return await producto.update(productoData)
     }
 
     async eliminar(id){
-        const producto = await Producto.findBypk(id)
+        const producto = await Producto.findByPk(id)
         if (!producto) return false
 
         await producto.destroy()

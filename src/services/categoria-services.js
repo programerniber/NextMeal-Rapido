@@ -16,7 +16,7 @@ async obtenerCategoriaPorId(id){
         return await Categoria.create(categoryData)
     }
 
-    async actualizarCliente(id, categoryData){
+    async actualizarCategoria(id, categoryData){
         const categoria = await this.obtenerCategoriaPorId(id)
         return await categoria.update(categoryData)
     }
