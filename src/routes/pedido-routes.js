@@ -18,7 +18,7 @@ import { autenticar, autorizarAdmin, verificarPermiso } from "../middlewares/aut
 const routerpedido = Router()
 
 routerpedido.get("/pedido", //autenticar,
- obtenerTodos)
+  obtenerTodos)
 routerpedido.get("/:id",// autenticar, validarIdPedido,
    obtenerPorId)
 routerpedido.post("/", 

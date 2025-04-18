@@ -9,7 +9,7 @@ export class PedidoRepository {
       include: [
         {
           model: Cliente,
-          attributes: ["nombrecompleto"],
+          attributes: ["nombrecompleto","telefono"],
         },
         {
           model: Producto,
@@ -25,7 +25,7 @@ export class PedidoRepository {
       include: [
         {
           model: Cliente,
-          attributes: ["nombrecompleto"],
+          attributes: ["nombrecompleto","telefono"],
         },
         {
           model: Producto,
