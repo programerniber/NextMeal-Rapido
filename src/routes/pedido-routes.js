@@ -47,6 +47,7 @@ routerpedido.patch(
   // validarIdPedido,
   // validarCambioEstadoPedido,
   cambiarEstadopedidos
+  //hola
 )
 
 export default routerpedido
