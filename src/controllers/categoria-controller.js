@@ -2,16 +2,16 @@ import { CategoriaServices } from "../services/categoria-services.js";
 import { validationResult } from 'express-validator';
 const categoryServices = new CategoriaServices();
 
-// Middleware para verificar autenticación
-// const checkAuth = (req, res, next) => {
-//   if (!req.usuario) {
-//     return res.status(401).json({ 
-//       exito: false, 
-//       mensaje: "No autorizado. Debe iniciar sesión." 
-//     });
-//   }
-//   next();
-// };
+//Middleware para verificar autenticación
+const checkAuth = (req, res, next) => {
+  if (!req.usuario) {
+    return res.status(401).json({ 
+      exito: false, 
+      mensaje: "No autorizado. Debe iniciar sesión." 
+    });
+  }
+  next();
+};
 
 export async function obtenerTodasLasCategorias(req, res) {
   try {
@@ -68,13 +68,13 @@ export async function crearCategoria(req, res) {
       return res.status(400).json({errors: errors.array()})
   }
   try {
-    // // Verificar autenticación primero
-    // if (!req.usuario || !req.usuario.id) {
-    //   return res.status(401).json({ 
-    //     exito: false, 
-    //     mensaje: "No autorizado. Usuario no identificado." 
-    //   });
-    // }
+    // Verificar autenticación primero
+    if (!req.usuario || !req.usuario.id) {
+      return res.status(401).json({ 
+        exito: false, 
+        mensaje: "No autorizado. Usuario no identificado." 
+      });
+    }
 
     const { nombre, descripcion, estado } = req.body;
 
@@ -119,13 +119,13 @@ export async function crearCategoria(req, res) {
 
 export async function actualizarCategoria(req, res) {
   try {
-    // Verificar autenticación
-    // if (!req.usuario || !req.usuario.id) {
-    //   return res.status(401).json({ 
-    //     exito: false, 
-    //     mensaje: "No autorizado. Usuario no identificado." 
-    //   });
-    // }
+    //Verificar autenticación
+    if (!req.usuario || !req.usuario.id) {
+      return res.status(401).json({ 
+        exito: false, 
+        mensaje: "No autorizado. Usuario no identificado." 
+      });
+    }
 
     const { id } = req.params;
     const data = req.body;
@@ -146,10 +146,10 @@ export async function actualizarCategoria(req, res) {
     }
 
     const updateData = {
-      // ...(nombre && { nombre }),
-      // ...(descripcion && { descripcion }),
-      // ...(estado && { estado }),
-      // // actualizadoPor: req.usuario.id,
+      ...(nombre && { nombre }),
+      ...(descripcion && { descripcion }),
+      ...(estado && { estado }),
+       actualizadoPor: req.usuario.id,
       ...data,
       fechaActualizacion: new Date()
     };

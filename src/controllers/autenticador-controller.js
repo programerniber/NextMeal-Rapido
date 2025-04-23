@@ -33,7 +33,7 @@ export const registrar = async (req, res) => {
       return res.status(400).json({ mensaje: "El correo ya está registrado" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(String(password), 10);
 
     const usuario = await usuarioService.crearUsuario({
       nombre,
@@ -209,7 +209,7 @@ export const cambiarRolUsuario = async (req, res) => {
   const { nuevoRol } = req.body;
 
   try {
-    const usuarioActualizado = await usuarioService.cambiarRol(id, nuevoRol);
+     const usuarioActualizado = await usuarioService.cambiarRol(id, nuevoRol);
 
     if (!usuarioActualizado) {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });

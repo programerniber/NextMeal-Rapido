@@ -11,18 +11,18 @@ import { autenticar, autorizarAdmin } from "../middlewares/autenticador-validato
 const routerPermisos = express.Router();
 
 // Rutas protegidas para administradores
-routerPermisos.get("/", //autenticar,
+routerPermisos.get("/", autenticar,
  obtenerPermisos);
 routerPermisos.get("/usuario/:id_usuario", //autenticar, 
   obtenerPermisosPorUsuario);
-routerPermisos.post("/",// autenticar,
-   //autorizarAdmin,
+routerPermisos.post("/", autenticar,
+   autorizarAdmin,
     crearPermiso);
-routerPermisos.put("/:id", //autenticar, 
-  //autorizarAdmin,
+routerPermisos.put("/:id", autenticar, 
+  autorizarAdmin,
   actualizarPermiso);
-routerPermisos.delete("/:id", //autenticar, 
-  //autorizarAdmin, 
+routerPermisos.delete("/:id", autenticar, 
+  autorizarAdmin, 
   eliminarPermiso);
 
 export default routerPermisos;

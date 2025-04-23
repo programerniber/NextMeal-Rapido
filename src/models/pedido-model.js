@@ -97,20 +97,16 @@ Pedido.prototype.calcularTotal = async function() {
 
 Pedido.belongsTo(Cliente, { foreignKey: "id_cliente" });
 Pedido.belongsToMany(Producto, {
-  through: {
-    model: PedidoProducto,
-    as: "PedidoProductos"
-  },
-  foreignKey: "pedido_id"
-})
+  through: PedidoProducto,
+  foreignKey: "pedido_id",
+  otherKey: "producto_id"
+});
 
 Cliente.hasMany(Pedido, { foreignKey: "id_cliente" });
 Producto.belongsToMany(Pedido, {
-  through: {
-    model: PedidoProducto,
-    as: "PedidoProductos"
-  },
-  foreignKey: "producto_id"
-})
+  through: PedidoProducto,
+  foreignKey: "producto_id",
+  otherKey: "pedido_id"
+});
 
 export default Pedido;

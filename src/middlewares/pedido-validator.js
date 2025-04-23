@@ -13,7 +13,7 @@ export const validarCreacionPedido = [
     .notEmpty().withMessage("El ID del cliente es obligatorio")
     .isInt().withMessage("El ID del cliente debe ser un número entero"),
 
-  body("id_producto")
+  body("productos.*.id_producto")
     .notEmpty().withMessage("El ID del producto es obligatorio")
     .isInt().withMessage("El ID del producto debe ser un número entero"),
 
@@ -36,7 +36,7 @@ export const validarCreacionPedido = [
 ];
 
 export const validarActualizacionPedido = [
-  body("id_producto")
+  body("productos.*.id_producto")
     .optional()
     .isInt().withMessage("El ID del producto debe ser un número entero"),
 

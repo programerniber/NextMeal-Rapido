@@ -10,17 +10,16 @@ export class PedidoService {
       include: [
         {
           model: Cliente,
-          attributes: ["nombrecompleto","telefono"],
+          attributes: ["nombrecompleto", "telefono"],
         },
         {
           model: Producto,
           attributes: ["id", "nombre", "precio"],
           through: {
             model: PedidoProducto,
-            as: "PedidoProducto", // 👈 Esto es importante
-            attributes: ["id", "cantidad", "precio_unitario", "subtotal"]
-          }
-        }
+            attributes: ["id", "cantidad", "precio_unitario", "subtotal"],
+          },
+        },
       ],
       order: [["id", "DESC"]],
     });
@@ -31,47 +30,44 @@ export class PedidoService {
       include: [
         {
           model: Cliente,
-          attributes: ["nombrecompleto","telefono"],
+          attributes: ["nombrecompleto"],
         },
         {
           model: Producto,
           attributes: ["id", "nombre", "precio"],
           through: {
-            model: PedidoProducto,
-            as: "PedidoProductos", // 👈 Esto es importante
-            attributes: ["id", "cantidad", "precio_unitario", "subtotal"]
-          }
-        }
+            attributes: ["id", "cantidad", "precio_unitario", "subtotal"],
+          },
+        },
       ],
     });
+
     if (!pedido) throw new Error("Pedido no encontrado");
-    return pedido;
+    return pedido.get({ plain: true });
   }
 
   async crearpedidos(pedidoData) {
     const { productos, ...datosPedido } = pedidoData;
-  
-    // Validación de productos
+
     if (!productos?.length) {
       throw new Error("Debe incluir al menos un producto");
     }
-  
+
     let transaction;
     try {
       transaction = await sequelize.transaction();
-  
-      // Crear pedido
+
       const pedido = await Pedido.create(datosPedido, { transaction });
-  
-      // Procesar productos
+
       for (const p of productos) {
-        const producto = await Producto.findByPk(p.producto_id, { transaction });
-        if (!producto) throw new Error(`Producto ${p.producto_id} no encontrado`);
-  
+        // Modificado aquí: usar p.id_producto en lugar de p.producto_id
+        const producto = await Producto.findByPk(p.id_producto, { transaction });
+        if (!producto) throw new Error(`Producto ${p.id_producto} no encontrado`);
+
         await PedidoProducto.create(
           {
             pedido_id: pedido.id,
-            producto_id: p.producto_id,
+            producto_id: p.id_producto,
             cantidad: p.cantidad,
             precio_unitario: producto.precio,
             subtotal: p.cantidad * producto.precio,
@@ -79,16 +75,15 @@ export class PedidoService {
           { transaction }
         );
       }
-  
-      // Calcular total
+
       const total = await PedidoProducto.sum("subtotal", {
         where: { pedido_id: pedido.id },
         transaction,
       });
-  
+
       await pedido.update({ total }, { transaction });
       await transaction.commit();
-  
+
       return pedido;
     } catch (error) {
       if (transaction && !transaction.finished) {
@@ -97,25 +92,56 @@ export class PedidoService {
       throw error;
     }
   }
-  
+
   async actualizarpedidos(id, pedidoData) {
-    // Mantenemos el nombre original
     const { productos, ...datosPedido } = pedidoData;
-    const pedido = await this.obtenerPorId(id);
+    let transaction;
 
-    await pedido.update(datosPedido);
+    try {
+      transaction = await sequelize.transaction();
+      const pedido = await Pedido.findByPk(id, { transaction });
 
-    if (productos && Array.isArray(productos)) {
-      await PedidoProducto.destroy({ where: { pedido_id: id } });
-      await pedido.setProductos(productos);
-      await pedido.calcularTotal();
+      if (!pedido) throw new Error("Pedido no encontrado para actualizar");
+
+      await pedido.update(datosPedido, { transaction });
+
+      if (productos && Array.isArray(productos)) {
+        await PedidoProducto.destroy({ where: { pedido_id: id }, transaction });
+
+        for (const p of productos) {
+          // Modificado aquí también: usar p.id_producto en lugar de p.producto_id
+          const producto = await Producto.findByPk(p.id_producto, { transaction });
+          if (!producto) throw new Error(`Producto ${p.id_producto} no encontrado`);
+
+          await PedidoProducto.create(
+            {
+              pedido_id: pedido.id,
+              producto_id: p.id_producto,
+              cantidad: p.cantidad,
+              precio_unitario: producto.precio,
+              subtotal: p.cantidad * producto.precio,
+            },
+            { transaction }
+          );
+        }
+
+        const total = await PedidoProducto.sum("subtotal", {
+          where: { pedido_id: id },
+          transaction,
+        });
+
+        await pedido.update({ total }, { transaction });
+      }
+
+      await transaction.commit();
+      return await this.obtenerPorId(id);
+    } catch (error) {
+      if (transaction && !transaction.finished) await transaction.rollback();
+      throw error;
     }
-
-    return await this.obtenerPorId(id);
   }
 
   async eliminarpedidos(id) {
-    // Mantenemos el nombre original
     const pedido = await this.obtenerPorId(id);
 
     if (pedido.estado === "terminado") {
@@ -123,20 +149,14 @@ export class PedidoService {
     }
 
     await PedidoProducto.destroy({ where: { pedido_id: id } });
-    await pedido.destroy();
+    await Pedido.destroy({ where: { id } });
     return { mensaje: "Pedido eliminado exitosamente" };
   }
 
   async cambiarEstadopedidos(id, estado) {
-    // Mantenemos el nombre original
-    const pedido = await this.obtenerPorId(id);
+    const pedido = await Pedido.findByPk(id);
 
-    const estadosValidos = [
-      "pendiente",
-      "preparacion",
-      "terminado",
-      "cancelado",
-    ];
+    const estadosValidos = ["pendiente", "preparacion", "terminado", "cancelado"];
     if (!estadosValidos.includes(estado)) {
       throw new Error("Estado no válido");
     }
