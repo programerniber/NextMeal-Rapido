@@ -1,26 +1,25 @@
-import jwt from "jsonwebtoken"
-import dotenv from "dotenv"
-import { RolRepository } from "../repositories/rol-repository.js"
-import { PermisoRepository } from "../repositories/permiso-repository.js"
+// middleware/autenticacion.js
 
-const ROL = new RolRepository()
-const permisoRepository = new PermisoRepository()
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import { RolRepository } from "../repositories/rol-repository.js";
+import { PermisoRepository } from "../repositories/permiso-repository.js";
 
-// Cargar variables de entorno
-dotenv.config()
+dotenv.config();
 
-// Obtener JWT_SECRET de las variables de entorno
-const JWT_SECRET = process.env.JWT_SECRET
+const JWT_SECRET = process.env.JWT_SECRET;
+const ROL = new RolRepository();
+const permisoRepository = new PermisoRepository();
 
-// Verificar que JWT_SECRET esté definido
 if (!JWT_SECRET) {
-  console.error("ERROR: JWT_SECRET no está definido en las variables de entorno.")
-  process.exit(1) // Detener la aplicación si falta esta variable crítica
+  console.error("ERROR: JWT_SECRET no está definido en las variables de entorno.");
+  process.exit(1);
 }
 
+// Middleware para autenticar al usuario usando token en cookies
 export const autenticar = async (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = req.cookies.token;
 
   if (!token) {
     return res.status(401).json({ exito: false, mensaje: "Acceso denegado, token no proporcionado" });
@@ -29,16 +28,13 @@ export const autenticar = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.usuario = decoded;
-    
-    // Cargar permisos del usuario si no están en el token
+
+    // Cargar permisos si no están presentes
     if (!req.usuario.permisos) {
       const permisos = await permisoRepository.obtenerPorUsuario(req.usuario.id);
-      req.usuario.permisos = permisos.map(p => ({
-        recurso: p.recurso,
-        accion: p.accion
-      }));
+      req.usuario.permisos = permisos.map(p => ({ recurso: p.recurso, accion: p.accion }));
     }
-    
+
     next();
   } catch (error) {
     console.error("Error al verificar token:", error.message);
@@ -46,79 +42,56 @@ export const autenticar = async (req, res, next) => {
   }
 };
 
+// Middleware para autorizar por rol
 export const autorizarRol = (roles = []) => {
   return async (req, res, next) => {
     try {
       if (!req.usuario) {
-        return res.status(403).json({
-          exito: false,
-          mensaje: "Acceso denegado. Usuario no autenticado",
-        });
+        return res.status(403).json({ exito: false, mensaje: "Acceso denegado. Usuario no autenticado" });
       }
 
-      // Obtener el rol del usuario
       const rol = await ROL.obtenerRolPorId(req.usuario.id_rol);
 
       if (!rol || !rol.nombre) {
-        return res.status(403).json({
-          exito: false,
-          mensaje: "Acceso denegado. No se pudo determinar el rol del usuario.",
-        });
+        return res.status(403).json({ exito: false, mensaje: "Rol no válido o no encontrado" });
       }
 
       const rolNombre = rol.nombre.toLowerCase();
       const rolesPermitidos = roles.map(r => r.toLowerCase());
 
-      // Verificar si el usuario tiene el rol permitido
       if (roles.length === 0 || rolesPermitidos.includes(rolNombre)) {
         return next();
       }
 
       return res.status(403).json({
         exito: false,
-        mensaje: `Acceso denegado. Se requiere uno de los siguientes roles: ${roles.join(", ")}`,
+        mensaje: `Acceso denegado. Requiere uno de los siguientes roles: ${roles.join(", ")}`,
         rolActual: rolNombre,
       });
-
     } catch (error) {
       console.error("Error en la autorización:", error);
-      return res.status(500).json({
-        exito: false,
-        mensaje: "Error interno en la autorización.",
-      });
+      return res.status(500).json({ exito: false, mensaje: "Error interno en la autorización" });
     }
   };
 };
 
-// Nuevo middleware para verificar permisos específicos
+// Middleware para verificar permisos específicos
 export const verificarPermiso = (recurso, accion) => {
   return async (req, res, next) => {
     try {
       if (!req.usuario) {
-        return res.status(403).json({
-          exito: false,
-          mensaje: "Acceso denegado. Usuario no autenticado",
-        });
+        return res.status(403).json({ exito: false, mensaje: "Acceso denegado. Usuario no autenticado" });
       }
 
-      // Obtener el rol del usuario
       const rol = await ROL.obtenerRolPorId(req.usuario.id_rol);
       const rolNombre = rol.nombre.toLowerCase();
 
-      // Si es administrador, permitir acceso sin verificar permisos
       if (rolNombre === "administrador") {
         return next();
       }
 
-      // Verificar si el usuario tiene el permiso específico
       const permisos = req.usuario.permisos || [];
-      
-      console.log("Verificando permiso:", recurso, accion);
-      console.log("Permisos del usuario:", permisos);
-      
-      const tienePermiso = permisos.some(
-        p => p.recurso === recurso && p.accion === accion
-      );
+      const tienePermiso = permisos.some(p => p.recurso === recurso && p.accion === accion);
 
       if (tienePermiso) {
         return next();
@@ -129,22 +102,13 @@ export const verificarPermiso = (recurso, accion) => {
         mensaje: `Acceso denegado. Se requiere permiso para ${recurso}:${accion}`,
         rolActual: rolNombre,
       });
-
     } catch (error) {
       console.error("Error en la verificación de permisos:", error);
-      return res.status(500).json({
-        exito: false,
-        mensaje: "Error interno en la verificación de permisos.",
-      });
+      return res.status(500).json({ exito: false, mensaje: "Error interno en la verificación de permisos" });
     }
   };
 };
 
-export const autorizarAdmin = (req, res, next) => {
-  return autorizarRol(["administrador"])(req, res, next)
-}
-
-// Middleware para autorizar administradores o empleados
-export const autorizarAdminOEmpleado = (req, res, next) => {
-  return autorizarRol(["administrador", "empleado"])(req, res, next)
-}
+// Atajos para roles comunes
+export const autorizarAdmin = (req, res, next) => autorizarRol(["administrador"])(req, res, next);
+export const autorizarAdminOEmpleado = (req, res, next) => autorizarRol(["administrador", "empleado"])(req, res, next);

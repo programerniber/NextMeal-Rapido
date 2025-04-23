@@ -1,104 +1,55 @@
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import dotenv from "dotenv";
-import Usuario from "../models/usuario-model.js";
-import UsuarioService from "../services/usuario-service.js";
-import { RolRepository } from "../repositories/rol-repository.js";
-const ROL = new RolRepository();
+import bcrypt from "bcryptjs"
+import dotenv from "dotenv"
+import UsuarioService from "../services/usuario-service.js"
+import { RolRepository } from "../repositories/rol-repository.js"
+import { generarToken } from "../utils/jwt.js"
+const ROL = new RolRepository()
 
-dotenv.config();
+dotenv.config()
 
-const usuarioService = new UsuarioService();
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error("ERROR: JWT_SECRET no está definido en las variables de entorno.");
-}
+const usuarioService = new UsuarioService()
 
-// 🔹 Función para generar Token JWT
-const generarToken = (usuario) => {
-  return jwt.sign(
-    { id: usuario.id, nombre: usuario.nombre, id_rol: usuario.id_rol },
-    JWT_SECRET,
-    { expiresIn: "1h" }
-  );
-};
-
-export const registrar = async (req, res) => {
-  const { nombre, email, password, id_rol } = req.body;
-
-
-  try {
-    const usuarioExistente = await usuarioService.obtenerUsuarioPorEmail(email);
-    if (usuarioExistente) {
-      return res.status(400).json({ mensaje: "El correo ya está registrado" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const usuario = await usuarioService.crearUsuario({
-      nombre,
-      email,
-      password: hashedPassword,
-      id_rol: id_rol,
-    });
-
-    if (!usuario || !usuario.id) {
-      return res.status(500).json({ mensaje: "Error al crear el usuario" });
-    }
-
-    // 🔹 Esperar que el usuario con su rol esté disponible
-    const usuarioConRol = await usuarioService.obtenerUsuarioPorId(usuario.id);
-    
-    if (!usuarioConRol) {
-      return res.status(500).json({ mensaje: "Error al recuperar el usuario recién creado" });
-    }
-
-    const token = generarToken(usuarioConRol);
-
-    const rol = await ROL.obtenerRolPorId(id_rol);
-
-    res.status(201).json({
-      mensaje: `Usuario registrado exitosamente como ${rol.nombre || "desconocido"}`,
-      token,
-      usuario: {
-        id: usuarioConRol.id,
-        nombre: usuarioConRol.nombre,
-        email: usuarioConRol.email,
-        id_rol: rol.nombre,
-      },
-    });
-
-  } catch (error) {
-    console.error("Error al registrar usuario:", error);
-    res.status(500).json({ mensaje: "Error interno al registrar el usuario", error: error.message });
-  }
-};
-
-// ✅ **Iniciar Sesión**
+//  **Iniciar Sesión**
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body
 
   try {
-    const usuario = await usuarioService.obtenerUsuarioPorEmail(email);
-     
+    // Buscar al usuario por su email
+    const usuario = await usuarioService.obtenerUsuarioPorEmail(email)
+
+    // Verificar si el usuario existe
     if (!usuario) {
-      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+      return res.status(404).json({ mensaje: "Usuario no encontrado" })
     }
 
-    const esPasswordValido = await bcrypt.compare(password, usuario.password);
+    // Comparar la contraseña enviada con la encriptada
+    const esPasswordValido = await bcrypt.compare(password, usuario.password)
+
     if (!esPasswordValido) {
-      return res.status(401).json({ mensaje: "Contraseña incorrecta" });
+      return res.status(401).json({ mensaje: "Contraseña y/o Correo incorrecta" })
     }
 
-    // Extraer id_rol correctamente
-    const { id_rol } = usuario;
+    // Generar el token JWT
+    const token = generarToken(usuario)
 
-    const rol = await ROL.obtenerRolPorId(id_rol);
+    // Configuración de cookies mejorada para desarrollo y producción
+    const cookieOptions = {
+      httpOnly: true,
+      maxAge: 60 * 60 * 1000, // 1 hora
+      path: "/",
+    }
 
-    // Generar token con permisos
-    const token = await generarToken(usuario);
+    // Solo usar secure y sameSite en producción
+    if (process.env.NODE_ENV === "production") {
+      cookieOptions.secure = true
+      cookieOptions.sameSite = "None"
+    }
 
-    res.json({
+    // Establecer la cookie
+    res.cookie("token", token, cookieOptions)
+
+    // Responder con el token y datos del usuario
+    res.status(200).json({
       mensaje: "Inicio de sesión exitoso",
       token,
       usuario: {
@@ -106,23 +57,51 @@ export const login = async (req, res) => {
         nombre: usuario.nombre,
         email: usuario.email,
         id_rol: usuario.id_rol,
-        rol: rol.nombre,
       },
-    });
+    })
   } catch (error) {
-    console.error("Error al iniciar sesión:", error);
-    res.status(500).json({ mensaje: "Error interno al iniciar sesión", error: error.message });
+    console.error("Error al iniciar sesión:", error)
+    res.status(500).json({ mensaje: "Error interno al iniciar sesión", error: error.message })
   }
-};
+}
 
+// Ruta para devolver el usuario autenticado
+export const obtenerUsuarioAutenticado = (req, res) => {
+  if (!req.usuario) {
+    return res.status(401).json({ exito: false, mensaje: "No autenticado" })
+  }
+
+  res.status(200).json({
+    exito: true,
+    data: {
+      id: req.usuario.id,
+      nombre: req.usuario.nombre,
+      email: req.usuario.email,
+      id_rol: req.usuario.id_rol,
+      permisos: req.usuario.permisos || [],
+    },
+  })
+}
+
+// Cerrar sesión
+export const logout = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  })
+
+  res.status(200).json({ exito: true, mensaje: "Sesión cerrada correctamente" })
+}
 
 // ✅ **Obtener todos los usuarios**
 export const obtenerUsuarios = async (req, res) => {
   try {
-    const usuarios = await usuarioService.obtenerTodosLosUsuarios();
-    
+    const usuarios = await usuarioService.obtenerTodosLosUsuarios()
+
     if (!usuarios || usuarios.length === 0) {
-      return res.status(404).json({ mensaje: "No hay usuarios registrados" });
+      return res.status(404).json({ mensaje: "No hay usuarios registrados" })
     }
 
     res.json({
@@ -132,93 +111,89 @@ export const obtenerUsuarios = async (req, res) => {
         nombre: usuario.nombre,
         email: usuario.email,
         id_rol: usuario.id_rol,
-      }))
-    });
-
+      })),
+    })
   } catch (error) {
-    console.error("Error al obtener usuarios registrados:", error);
-    res.status(500).json({ mensaje: "Error interno al obtener usuarios", error: error.message });
+    console.error("Error al obtener usuarios registrados:", error)
+    res.status(500).json({ mensaje: "Error interno al obtener usuarios", error: error.message })
   }
-};
+}
 
 // ✅ **Obtener un usuario por ID**
 export const obtenerUsuario = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params
 
   try {
-    const usuario = await usuarioService.obtenerUsuarioPorId(id);
+    const usuario = await usuarioService.obtenerUsuarioPorId(id)
     if (!usuario) {
-      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+      return res.status(404).json({ mensaje: "Usuario no encontrado" })
     }
 
     res.json({
       id: usuario.id,
       nombre: usuario.nombre,
       email: usuario.email,
-      id_rol: usuario.Rol.nombre,
-    });
-
+      id_rol: usuario.Rol?.nombre || usuario.id_rol,
+    })
   } catch (error) {
-    console.error("Error al obtener usuario:", error);
-    res.status(500).json({ mensaje: "Error interno al obtener usuario" });
+    console.error("Error al obtener usuario:", error)
+    res.status(500).json({ mensaje: "Error interno al obtener usuario" })
   }
-};
+}
 
 // ✅ **Actualizar usuario**
 export const actualizarUsuario = async (req, res) => {
-  const { id } = req.params;
-  const { nombre, email, id_rol } = req.body;
+  const { id } = req.params
+  const { nombre, email, id_rol } = req.body
 
   try {
-    const usuarioActualizado = await usuarioService.actualizarUsuario(id, { nombre, email, id_rol });
+    const usuarioActualizado = await usuarioService.actualizarUsuario(id, { nombre, email, id_rol })
 
     if (!usuarioActualizado) {
-      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+      return res.status(404).json({ mensaje: "Usuario no encontrado" })
     }
 
-    res.json({ mensaje: "Usuario actualizado exitosamente", usuario: usuarioActualizado });
-
+    res.json({ mensaje: "Usuario actualizado exitosamente", usuario: usuarioActualizado })
   } catch (error) {
-    console.error("Error al actualizar usuario:", error);
-    res.status(500).json({ mensaje: "Error interno al actualizar usuario" });
+    console.error("Error al actualizar usuario:", error)
+    res.status(500).json({ mensaje: "Error interno al actualizar usuario" })
   }
-};
+}
 
 // ✅ **Eliminar usuario**
 export const eliminarUsuario = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params
 
   try {
-    const usuarioEliminado = await usuarioService.eliminarUsuario(id);
+    const usuarioEliminado = await usuarioService.eliminarUsuario(id)
 
     if (!usuarioEliminado) {
-      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+      return res.status(404).json({ mensaje: "Usuario no encontrado" })
     }
 
-    res.json({ mensaje: "Usuario eliminado exitosamente" });
-
+    res.json({ mensaje: "Usuario eliminado exitosamente" })
   } catch (error) {
-    console.error("Error al eliminar usuario:", error);
-    res.status(500).json({ mensaje: "Error interno al eliminar usuario" });
+    console.error("Error al eliminar usuario:", error)
+    res.status(500).json({ mensaje: "Error interno al eliminar usuario" })
   }
-};
+}
 
-// ✅ **Cambiar rol de un usuario**
-export const cambiarRolUsuario = async (req, res) => {
-  const { id } = req.params;
-  const { nuevoRol } = req.body;
-
+export const crearUsuarioController = async (req, res) => {
   try {
-    const usuarioActualizado = await usuarioService.cambiarRol(id, nuevoRol);
+    const { nombre, email, password, id_rol } = req.body
 
-    if (!usuarioActualizado) {
-      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    const nuevoUsuario = {
+      nombre,
+      email,
+      password: hashedPassword,
+      id_rol,
     }
-
-    res.json({ mensaje: "Rol de usuario actualizado correctamente", usuario: usuarioActualizado });
-
+    const usuarioCreado = await usuarioService.crearUsuario(nuevoUsuario)
+    res.status(200).json(usuarioCreado)
   } catch (error) {
-    console.error("Error al cambiar rol de usuario:", error);
-    res.status(500).json({ mensaje: "Error interno al cambiar rol de usuario" });
+    console.error(error)
+    res.status(500).json({ message: "Error interno al crear un usuario" })
   }
-};
+}
