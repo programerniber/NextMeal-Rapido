@@ -17,9 +17,9 @@ export const validarCreacionPedido = [
     .notEmpty().withMessage("El ID del producto es obligatorio")
     .isInt().withMessage("El ID del producto debe ser un número entero"),
 
-  body("cantidad")
-    .notEmpty().withMessage("La cantidad es obligatoria")
-    .isInt({ min: 1 }).withMessage("La cantidad debe ser un número entero positivo"),
+  // body("cantidad")
+  //   .notEmpty().withMessage("La cantidad es obligatoria")
+  //   .isInt({ min: 1 }).withMessage("La cantidad debe ser un número entero positivo"),
 
 
 
@@ -40,9 +40,9 @@ export const validarActualizacionPedido = [
     .optional()
     .isInt().withMessage("El ID del producto debe ser un número entero"),
 
-  body("cantidad")
-    .optional()
-    .isInt({ min: 1 }).withMessage("La cantidad debe ser un número entero positivo"),
+  // body("cantidad")
+  //   .optional()
+  //   .isInt({ min: 1 }).withMessage("La cantidad debe ser un número entero positivo"),
 
   body("metodo_pago")
     .optional()

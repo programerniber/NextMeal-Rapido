@@ -8,12 +8,12 @@ import { PermisoRepository } from "../repositories/permiso-repository.js";
 
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const SECRET_KEY = process.env.SECRET_KEY;
 const ROL = new RolRepository();
 const permisoRepository = new PermisoRepository();
 
-if (!JWT_SECRET) {
-  console.error("ERROR: JWT_SECRET no está definido en las variables de entorno.");
+if (!SECRET_KEY) {
+  console.error("ERROR: SECRET_KEY no está definido en las variables de entorno.");
   process.exit(1);
 }
 
@@ -24,9 +24,11 @@ export const autenticar = async (req, res, next) => {
   if (!token) {
     return res.status(401).json({ exito: false, mensaje: "Acceso denegado, token no proporcionado" });
   }
-
+  const decoded = jwt.verify(token, SECRET_KEY);
+  req.usuario = decoded;
+  console.log("Usuario autenticado:", req.usuario.permiso);
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, SECRET_KEY);
     req.usuario = decoded;
 
     // Cargar permisos si no están presentes
