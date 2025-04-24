@@ -4,13 +4,29 @@ const permisoService = new PermisoService();
 
 export const obtenerPermisos = async (req, res) => {
   try {
-    const permisos = await permisoService.obtenerPermisos();
+    const permisos = await permisoService.obtenerTodosLosPermisos();
     res.json({ exito: true, permisos });
   } catch (error) {
     console.error("Error al obtener permisos:", error);
     res.status(500).json({ exito: false, mensaje: "Error al obtener permisos" });
   }
 };
+
+export const obtenerPermisoId = async (req, res) => {
+  const { id } = req.params;
+  console.log("xxxxxxxxxxxxx",id);
+  try {
+    const permiso = await permisoService.obtenerPermisoPorId(id);
+    
+    if (!permiso) {
+      return res.status(404).json({ exito: false, mensaje: "Permiso no encontrado" });
+    }
+    res.json({ exito: true, permiso });
+  } catch (error) {
+    console.error("Error al obtener permiso por ID:", error);
+    res.status(500).json({ exito: false, mensaje: "Error al obtener permiso" });
+  }
+}
 
 
 
