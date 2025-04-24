@@ -20,7 +20,7 @@ export class PedidoService {
             attributes: ["id", "cantidad", "precio_unitario", "subtotal"],
           },
         },
-      ],
+      ], 
       order: [["id", "DESC"]],
     });
   }
