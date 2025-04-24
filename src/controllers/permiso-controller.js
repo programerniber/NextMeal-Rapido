@@ -14,10 +14,10 @@ export const obtenerPermisos = async (req, res) => {
 
 export const obtenerPermisoId = async (req, res) => {
   const { id } = req.params;
-  console.log("xxxxxxxxxxxxx",id);
+  console.log("xxxxxxxxxxxxx", id);
   try {
     const permiso = await permisoService.obtenerPermisoPorId(id);
-    
+
     if (!permiso) {
       return res.status(404).json({ exito: false, mensaje: "Permiso no encontrado" });
     }
@@ -28,6 +28,22 @@ export const obtenerPermisoId = async (req, res) => {
   }
 }
 
+export const obtenerPermisosPorRol = async (req, res) => {
+  const { idRol } = req.params;
+
+  try {
+    const permisos = await permisoService.obtenerPermisosPorRol(idRol);
+
+    if (!permisos) {
+      return res.status(404).json({ exito: false, mensaje: "Permisos no encontrados" });
+    }
+
+    res.json({ exito: true, permisos });
+  } catch (error) {
+    console.error("Error al obtener permisos por rol:", error);
+    res.status(500).json({ exito: false, mensaje: "Error al obtener permisos por rol" });
+  }
+};
 
 
 export const crearPermiso = async (req, res) => {
