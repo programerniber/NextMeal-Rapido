@@ -1,4 +1,5 @@
 import Permiso from "../models/permiso-model.js"
+import Rol from "../models/rol-model.js"
 
 export class PermisoRepository {
   async obtenerTodosLosPermisos() {
@@ -25,6 +26,16 @@ export class PermisoRepository {
     if (!permiso) return false
     await permiso.destroy()
     return true
+  }
+  async obtenerPermisosPorRol(idRol) {
+    const rol = await Rol.findByPk(idRol, {
+      include: {
+        model: Permiso,
+        through: { attributes: [] }, // Para no incluir los datos de la tabla intermedia
+      },
+    })
+
+    return rol?.Permisos || []
   }
 
 }

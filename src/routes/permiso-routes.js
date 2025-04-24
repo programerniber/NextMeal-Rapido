@@ -5,6 +5,7 @@ import {
   crearPermiso,
   actualizarPermiso,
   eliminarPermiso,
+  obtenerPermisosPorRol
 
 } from "../controllers/permiso-controller.js";
 import {
@@ -21,5 +22,6 @@ routerPermisos.get("/:id", autenticar, autorizarAdmin, obtenerPermisoId);
 routerPermisos.post("/", autenticar, autorizarAdmin, crearPermiso);
 routerPermisos.put("/:id", autenticar, autorizarAdmin, actualizarPermiso);
 routerPermisos.delete("/:id", autenticar, autorizarAdmin, eliminarPermiso);
+routerPermisos.get("/rol/:idRol", autenticar, autorizarAdmin, obtenerPermisosPorRol);
 
 export default routerPermisos;
