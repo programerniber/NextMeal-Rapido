@@ -28,7 +28,7 @@ export class PermisoRepository {
   }
   async obtenerPorUsuario(idUsuario) {
     return await Permiso.findAll({
-      where: { id_usuario: idUsuario }
+      where: { id: idUsuario }
     });
   }
 }
