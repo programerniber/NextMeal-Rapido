@@ -17,7 +17,7 @@ const routerPermisos = express.Router();
 // Rutas protegidas para administradores
 routerPermisos.get("/", autenticar, autorizarAdmin, obtenerPermisos);
 routerPermisos.get(
-  "/usuario/:id_usuario",
+  "/usuario/:id",
   autenticar,
   autorizarAdmin,
   obtenerPermisosPorUsuario
