@@ -1,8 +1,35 @@
 import { UsuarioRepository } from "../repositories/usuario-repository.js";
+import  Rol  from "../models/rol-model.js";
+import  Permiso  from "../models/permiso-model.js";
 
 const usuarioRepository = new UsuarioRepository();
 
 export default class UsuarioService {
+
+
+  async obtenerPermisosPorUsuario(idUsuario) {
+    const usuario = await this.obtenerUsuarioPorId(idUsuario);
+    
+    if (!usuario) {
+      throw new Error('Usuario no encontrado');
+    }
+    
+    // Obtener el rol del usuario
+    const rol = await Rol.findByPk(usuario.id_rol, {
+      include: {
+        model: Permiso,
+        through: { attributes: [] }, // Excluir atributos de la tabla intermedia
+      },
+    });
+    
+    if (!rol) {
+      throw new Error('Rol no encontrado');
+    }
+    
+    // Devolver los permisos asociados al rol
+    return rol.Permisos;
+  }
+
   async obtenerTodosLosUsuarios() {
     return await usuarioRepository.obtenerTodos();
   }
@@ -39,9 +66,5 @@ export default class UsuarioService {
     return await usuarioRepository.cambiarRol(id, id_rol);
   }
 
-  async obtenerPermisosPorUsuario(idUsuario) {
-    const usuario = await usuarioRepository.obtenerPorId(idUsuario);
-    if (!usuario) throw new Error("Usuario no encontrado");
-    return usuario; // Devuelve el usuario con su rol si la relación está bien definida en Sequelize
-  }
+  
 }

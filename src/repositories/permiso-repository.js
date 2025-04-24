@@ -1,35 +1,34 @@
-import Permiso from "../models/permiso-model.js";
+import Permiso from "../models/permiso-model.js"
 
-class PermisoRepository {
-  async obtenerTodos() {
-    return await Permiso.findAll();
+export class PermisoRepository {
+  async obtenerTodosLosPermisos() {
+    return await Permiso.findAll()
   }
 
-  async obtenerPorId(id) {
-    return await Permiso.findByPk(id);
+  async obtenerPermisoPorId(id) {
+    return await Permiso.findByPk(id)
   }
 
-  async crear(datosPermiso) {
-    return await Permiso.create(datosPermiso);
+  async crearPermiso(permisoData) {
+    return await Permiso.create(permisoData)
   }
 
-  async actualizar(id, datosActualizados) {
-    const permiso = await Permiso.findByPk(id);
-    if (!permiso) return null;
-    return await permiso.update(datosActualizados);
+  async actualizarPermiso(id, permisoData) {
+    const permiso = await Permiso.findByPk(id)
+    if (!permiso) return null
+    await permiso.update(permisoData)
+    return permiso
   }
 
-  async eliminar(id) {
-    const permiso = await Permiso.findByPk(id);
-    if (!permiso) return null;
-    await permiso.destroy();
-    return true;
+  async eliminarPermiso(id) {
+    const permiso = await Permiso.findByPk(id)
+    if (!permiso) return false
+    await permiso.destroy()
+    return true
   }
-
-  async obtenerPorUsuario(id_usuario) {
-    return await Permiso.findAll({ where: { id_usuario } });
+  async obtenerPorUsuario(idUsuario) {
+    return await Permiso.findAll({
+      where: { id_usuario: idUsuario }
+    });
   }
 }
-
-// ⚠️ Aquí exportamos directamente la CLASE, no una instancia.
-export { PermisoRepository };

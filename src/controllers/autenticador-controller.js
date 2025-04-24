@@ -1,9 +1,11 @@
+
 import bcrypt from "bcryptjs"
 import dotenv from "dotenv"
 import UsuarioService from "../services/usuario-service.js"
-import { RolRepository } from "../repositories/rol-repository.js"
 import { generarToken } from "../utils/jwt.js"
-const ROL = new RolRepository()
+import Rol from "../models/rol-model.js"
+import Permiso from "../models/permiso-model.js"
+
 
 dotenv.config()
 
@@ -11,60 +13,57 @@ const usuarioService = new UsuarioService()
 
 //  **Iniciar Sesión**
 export const login = async (req, res) => {
-  const { email, password } = req.body
+  const { email, password } = req.body;
 
   try {
-    // Buscar al usuario por su email
-    const usuario = await usuarioService.obtenerUsuarioPorEmail(email)
+    const usuario = await usuarioService.obtenerUsuarioPorEmail(email);
 
-    // Verificar si el usuario existe
     if (!usuario) {
-      return res.status(404).json({ mensaje: "Usuario no encontrado" })
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
     }
 
-    // Comparar la contraseña enviada con la encriptada
-    const esPasswordValido = await bcrypt.compare(password, usuario.password)
+    const esPasswordValido = await bcrypt.compare(password, usuario.password);
 
     if (!esPasswordValido) {
-      return res.status(401).json({ mensaje: "Contraseña y/o Correo incorrecta" })
+      return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
     }
 
-    // Generar el token JWT
-    const token = generarToken(usuario)
+    // Obtener permisos del rol del usuario
+    const permisos = await usuarioService.obtenerPermisosPorUsuario(usuario.id);
 
-    // Configuración de cookies mejorada para desarrollo y producción
+    // Generar token JWT
+    const token = generarToken(usuario);
+
+    // Configuración de cookies
     const cookieOptions = {
       httpOnly: true,
       maxAge: 60 * 60 * 1000, // 1 hora
-      path: "/",
+      path: '/',
+    };
+
+    if (process.env.NODE_ENV === 'production') {
+      cookieOptions.secure = true;
+      cookieOptions.sameSite = 'None';
     }
 
-    // Solo usar secure y sameSite en producción
-    if (process.env.NODE_ENV === "production") {
-      cookieOptions.secure = true
-      cookieOptions.sameSite = "None"
-    }
+    res.cookie('token', token, cookieOptions);
 
-    // Establecer la cookie
-    res.cookie("token", token, cookieOptions)
-
-    // Responder con el token y datos del usuario
     res.status(200).json({
-      mensaje: "Inicio de sesión exitoso",
+      mensaje: 'Inicio de sesión exitoso',
       token,
       usuario: {
         id: usuario.id,
         nombre: usuario.nombre,
         email: usuario.email,
         id_rol: usuario.id_rol,
+        permisos: permisos.map((permiso) => permiso.recurso), // Solo devolver los recursos como ejemplo
       },
-    })
+    });
   } catch (error) {
-    console.error("Error al iniciar sesión:", error)
-    res.status(500).json({ mensaje: "Error interno al iniciar sesión", error: error.message })
+    console.error('Error al iniciar sesión:', error);
+    res.status(500).json({ mensaje: 'Error interno al iniciar sesión', error: error.message });
   }
-}
-
+};
 // Ruta para devolver el usuario autenticado
 export const obtenerUsuarioAutenticado = (req, res) => {
   if (!req.usuario) {
@@ -78,7 +77,6 @@ export const obtenerUsuarioAutenticado = (req, res) => {
       nombre: req.usuario.nombre,
       email: req.usuario.email,
       id_rol: req.usuario.id_rol,
-      permisos: req.usuario.permisos || [],
     },
   })
 }
@@ -133,7 +131,7 @@ export const obtenerUsuario = async (req, res) => {
       id: usuario.id,
       nombre: usuario.nombre,
       email: usuario.email,
-      id_rol: usuario.Rol?.nombre || usuario.id_rol,
+      id_rol:  usuario.id_rol,
     })
   } catch (error) {
     console.error("Error al obtener usuario:", error)

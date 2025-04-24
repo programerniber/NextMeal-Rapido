@@ -34,7 +34,7 @@ router.get("/clientesActivos", async (req, res) => {
 
 router.get("/", obtenerTodosLosClientes);
 router.get(
-  "/:id", //autenticar,
+  "/:id", autenticar,
   validarIdCliente,
   obtenerClientePorId
 );
