@@ -7,7 +7,7 @@ const permisoService = new PermisoService() // ✅ Instancia del servicio
 export const verificarPermiso = (recurso, accion) => {
   return async (req, res, next) => {
     try {
-      const usuarioId = req.usuario?.id;
+      const usuarioId = req.Rol?.id;
 
       if (!usuarioId) {
         return res.status(401).json({

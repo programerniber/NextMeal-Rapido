@@ -23,7 +23,4 @@ export default class PermisoService {
   async eliminarPermiso(id) {
     return await permisoRepository.eliminarPermiso(id)
   }
-  async obtenerPorUsuario(idUsuario) {
-    return await permisoRepository.obtenerPorUsuario(idUsuario);
-  }
 }
