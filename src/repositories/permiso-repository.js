@@ -26,9 +26,5 @@ export class PermisoRepository {
     await permiso.destroy()
     return true
   }
-  async obtenerPorUsuario(idUsuario) {
-    return await Permiso.findAll({
-      where: { id: idUsuario }
-    });
-  }
+
 }
