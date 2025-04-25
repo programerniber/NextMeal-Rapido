@@ -13,7 +13,7 @@ import { autenticar, autorizarAdmin } from "../middlewares/autenticador-validato
 
 const router = Router()
 
-// Rutas públicas
+// Rutas públicas11
 router.post("/login", login)
 router.post("/logout", logout)
 
