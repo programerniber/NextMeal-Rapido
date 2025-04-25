@@ -55,51 +55,32 @@ export class RolService {
   }
 
   async actualizarRol(id, rolData) {
-    let transaction;
-    
+    const { nombre, permisos } = rolData;
+    const transaction = await sequelize.transaction();
+
     try {
-      transaction = await sequelize.transaction();
-      const rol = await Rol.findByPk(id, { transaction });
-      
-      if (!rol) throw new Error("Rol no encontrado para actualizar");
-      
-      // Actualizar los datos básicos del rol
-      if (rolData.nombre) {
-        await rol.update({ nombre: rolData.nombre }, { transaction });
+      // Actualizar el rol
+      const rol = await this.obtenerRolPorId(id);
+      if (!rol) return null;
+
+      await Rol.update({ nombre }, { where: { id }, transaction });
+
+      // Eliminar permisos existentes
+      await PermisoRol.destroy({ where: { rol_id: id }, transaction });
+
+      // Asociar nuevos permisos al rol
+      for (const permisoId of permisos) {
+        await PermisoRol.create(
+          { rol_id: id, permiso_id: permisoId },
+          { transaction }
+        );
       }
-      
-      // Si se proporcionan datos de permiso, actualizamos o creamos el permiso
-      if (rolData.recurso && rolData.accion) {
-        // Buscar si ya existe un permiso asociado con este recurso y acción
-        let permiso = await Permiso.findOne({
-          where: {
-            recurso: rolData.recurso,
-            accion: rolData.accion
-          }
-        }, { transaction });
-        
-        if (!permiso) {
-          // Si no existe el permiso, lo creamos
-          permiso = await Permiso.create({
-            recurso: rolData.recurso,
-            accion: rolData.accion,
-            activo: rolData.activo !== undefined ? rolData.activo : true
-          }, { transaction });
-        } else if (rolData.activo !== undefined) {
-          // Si el permiso existe y se proporciona el estado activo, actualizamos
-          await permiso.update({ activo: rolData.activo }, { transaction });
-        }
-        
-        // Aquí faltaría relacionar el permiso con el rol si es necesario
-        // Por ejemplo: await rol.addPermiso(permiso, { transaction });
-      }
-      
+
       await transaction.commit();
-      return rol;
-      
+      return await this.obtenerRolPorId(id);
     } catch (error) {
-      if (transaction) await transaction.rollback();
-      throw error;
+      if (transaction && !transaction.finished) await transaction.rollback();
+      throw new Error("Error al actualizar el rol: " + error.message);
     }
   }
   
