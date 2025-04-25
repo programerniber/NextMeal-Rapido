@@ -1,6 +1,6 @@
-import { DataTypes } from "sequelize";
-import { sequelize } from "../config/database.js";
-import Categoria from "./categoria-model.js";
+import { DataTypes } from "sequelize"
+import { sequelize } from "../config/database.js"
+import Categoria from "./categoria-model.js"
 
 const Producto = sequelize.define(
   "Producto",
@@ -13,32 +13,38 @@ const Producto = sequelize.define(
     nombre: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: false,
+    },
+    descripcion: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     precio: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
     estado: {
       type: DataTypes.ENUM("activo", "inactivo"),
       defaultValue: "activo",
     },
-    descripcion: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-
     Id_Categoria: {
       type: DataTypes.INTEGER,
-      references: { model: Categoria, key: "id" },
+      allowNull: false,
+      references: {
+        model: Categoria,
+        key: "id",
+      },
+    },
+    imagenUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
     timestamps: true,
-  }
-);
+  },
+)
 
-Producto.belongsTo(Categoria, { foreignKey: "Id_Categoria" });
-Categoria.hasMany(Producto, { foreignKey: "Id_Categoria" });
+Producto.belongsTo(Categoria, { foreignKey: "Id_Categoria" })
+Categoria.hasMany(Producto, { foreignKey: "Id_Categoria" })
 
-export default Producto;
+export default Producto
