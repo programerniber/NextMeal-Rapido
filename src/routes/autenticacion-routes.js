@@ -10,16 +10,12 @@ import {
   crearUsuarioController,
 } from "../controllers/autenticador-controller.js"
 import { autenticar, autorizarAdmin } from "../middlewares/autenticador-validator.js"
-
 const router = Router()
-
-// Rutas públicas11
+// Rutas públicas
 router.post("/login", login)
 router.post("/logout", logout)
-
 // Rutas protegidas
 router.get("/usuario-autenticado", autenticar, obtenerUsuarioAutenticado)
-
 // Rutas de administración (protegidas y solo para admin)
 router.get("/usuarios", autenticar, autorizarAdmin, obtenerUsuarios)
 router.get("/usuarios/:id", autenticar, autorizarAdmin, obtenerUsuario)
@@ -32,24 +28,19 @@ router.put("/usuarios/:id/estado", autenticar, autorizarAdmin, async (req, res) 
   try {
     const { id } = req.params
     const { estado } = req.body
-
     if (!estado || !["activo", "inactivo"].includes(estado)) {
       return res.status(400).json({
         exito: false,
         mensaje: "El estado debe ser 'activo' o 'inactivo'",
       })
     }
-
     // Importar el servicio de usuarios
     const { UsuarioService } = await import("../services/usuario-services.js")
     const usuarioService = new UsuarioService()
-
     // Obtener el usuario actual para verificar que existe
     const usuario = await usuarioService.obtenerUsuarioPorId(id)
-
     // Actualizar solo el estado
     const usuarioActualizado = await usuarioService.actualizarUsuario(id, { estado })
-
     res.status(200).json({
       exito: true,
       data: usuarioActualizado,

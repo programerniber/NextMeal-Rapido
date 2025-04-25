@@ -49,7 +49,7 @@ export async function crearProductos(req, res) {
       estado,
       descripcion,
       Id_Categoria,
-      // creadoPor: req.usuario?.id || null,
+       creadoPor: req.usuario?.id || null,
     };
 
     const nuevoProducto = await productoService.crearProducto(productoData); 
@@ -76,7 +76,7 @@ export async function actualizarProductos(req, res) {
     const productoData = req.body
 
     // Validar si req.usuario está definido antes de acceder a id
-    // productoData.actualizadoPor = req.usuario?.id || null
+    productoData.actualizadoPor = req.usuario?.id || null
 
     // 🔹 Llamar correctamente a la función del servicio
     const productoActualizado = await productoService.actualizarProducto(id, productoData)
