@@ -6,35 +6,57 @@ import {
   actualizarProductos,
   eliminarProductos,
 } from "../controllers/productos-controller.js"
-import { autenticar } from "../middlewares/autenticador-validator.js"
-import { verificarPermiso } from "../middlewares/permiso-validator.js"
 import {
   validarCreacionProducto,
   validarActualizacionProducto,
   validarIdProducto,
 } from "../middlewares/productos-validator.js"
 
-const routerproducto = Router()
+const routerProductos = Router()
 
-// Rutas públicas o que solo requieren autenticación
-routerproducto.get("/", obtenerProductos)
-routerproducto.get("/:id", //validarIdProducto, 
-  obtenerProductoPorID)
+// Rutas para productos
+routerProductos.get("/", obtenerProductos)
+routerProductos.get("/:id", validarIdProducto, obtenerProductoPorID)
+routerProductos.post("/", validarCreacionProducto, crearProductos)
+routerProductos.put("/:id", validarActualizacionProducto, actualizarProductos)
+routerProductos.delete("/:id", validarIdProducto, eliminarProductos)
 
-// Rutas que requieren autenticación y permisos específicos
-routerproducto.post("/", //autenticar, 
-  //verificarPermiso("productos", "crear"),
-   validarCreacionProducto, crearProductos)
-routerproducto.put(
-  "/:id",
- // autenticar,
-  //verificarPermiso("productos", "editar"),
-  validarIdProducto,
-  validarActualizacionProducto,
-  actualizarProductos
-)
-routerproducto.delete("/:id", //autenticar,
-   //verificarPermiso("productos", "eliminar"), 
-   validarIdProducto, eliminarProductos)
+// Ruta para cambiar el estado de un producto
+routerProductos.patch("/:id/estado", validarIdProducto, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { estado } = req.body
 
-export default routerproducto
+    if (!estado || !["activo", "inactivo"].includes(estado)) {
+      return res.status(400).json({
+        exito: false,
+        mensaje: "El estado debe ser 'activo' o 'inactivo'",
+      })
+    }
+
+    // Importar el servicio de productos
+    const { ProductoService } = await import("../services/producto-services.js")
+    const productoService = new ProductoService()
+
+    // Obtener el producto actual
+    const producto = await productoService.obtenerProductoPorId(id)
+
+    // Actualizar solo el estado
+    const productoActualizado = await productoService.actualizarProducto(id, { estado })
+
+    res.status(200).json({
+      exito: true,
+      data: productoActualizado,
+      mensaje: `Estado del producto actualizado a '${estado}'`,
+    })
+  } catch (error) {
+    console.error("Error al cambiar estado del producto:", error)
+    res.status(500).json({
+      exito: false,
+      mensaje: "Error al cambiar el estado del producto",
+      error: error.message,
+    })
+  }
+})
+
+export default routerProductos
