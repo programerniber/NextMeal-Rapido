@@ -11,7 +11,7 @@ const Usuario = sequelize.define('Usuario', {
   nombre: {
     type: DataTypes.STRING,
     allowNull: true,
-  }, 
+  },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -20,6 +20,14 @@ const Usuario = sequelize.define('Usuario', {
   password: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+  estado: {
+    type: DataTypes.ENUM('activo', 'inactivo'),
+    defaultValue: 'activo',
+  },
+  cedula: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   id_rol: {  // Cambio para coincidir con la BD
     type: DataTypes.INTEGER,

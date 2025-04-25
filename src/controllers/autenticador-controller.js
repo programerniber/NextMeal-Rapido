@@ -131,7 +131,7 @@ export const obtenerUsuario = async (req, res) => {
       id: usuario.id,
       nombre: usuario.nombre,
       email: usuario.email,
-      id_rol:  usuario.id_rol,
+      id_rol: usuario.id_rol,
     })
   } catch (error) {
     console.error("Error al obtener usuario:", error)
@@ -187,6 +187,8 @@ export const crearUsuarioController = async (req, res) => {
       email,
       password: hashedPassword,
       id_rol,
+      cedula: req.body.cedula,
+      estado: req.body.estado || "activo", // Asignar "activo" por defecto si no se proporciona
     }
     const usuarioCreado = await usuarioService.crearUsuario(nuevoUsuario)
     res.status(200).json(usuarioCreado)
