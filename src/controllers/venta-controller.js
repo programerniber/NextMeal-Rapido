@@ -49,8 +49,10 @@ export async function crearVenta(req, res) {
   try {
     const ventaData = req.body
 
-    // Agregar información del usuario que crea la venta
-    ventaData.creadoPor = req.usuario.id
+    // Agregar información del usuario que crea la venta si está disponible
+    if (req.usuario) {
+      ventaData.creadoPor = req.usuario.id
+    }
 
     const nuevaVenta = await ventaService.crear(ventaData)
     res.status(201).json({
@@ -73,8 +75,10 @@ export async function actualizarVenta(req, res) {
     const { id } = req.params
     const ventaData = req.body
 
-    // Agregar información del usuario que actualiza la venta
-    ventaData.actualizadoPor = req.usuario.id
+    // Agregar información del usuario que actualiza la venta si está disponible
+    if (req.usuario) {
+      ventaData.actualizadoPor = req.usuario.id
+    }
 
     const ventaActualizada = await ventaService.actualizar(id, ventaData)
 
@@ -128,40 +132,29 @@ export async function eliminarVenta(req, res) {
 
 export async function actualizarMetodoPago(req, res) {
   try {
-    const { id } = req.params
-    const { metodo_pago } = req.body
+    const { id } = req.params;
+    const { metodo_pago } = req.body;
 
-    // Validar que el método de pago sea válido
-    const metodosValidos = ["efectivo", "transferencia"]
-
-    if (!metodosValidos.includes(metodo_pago)) {
-      return res.status(400).json({
-        exito: false,
-        mensaje: "Método de pago no válido. Debe ser 'efectivo' o 'transferencia'",
-      })
-    }
-
-    const ventaActualizada = await ventaService.actualizarMetodoPago(id, metodo_pago)
+    const ventaActualizada = await ventaService.actualizarMetodoPago(id, metodo_pago);
 
     if (!ventaActualizada) {
       return res.status(404).json({
         exito: false,
         mensaje: "Venta no encontrada",
-      })
+      });
     }
 
     res.status(200).json({
       exito: true,
       data: ventaActualizada,
       mensaje: `Método de pago actualizado a '${metodo_pago}'`,
-    })
+    });
   } catch (error) {
-    console.error("Error al actualizar el método de pago:", error)
+    console.error("Error al actualizar el método de pago:", error);
     res.status(400).json({
       exito: false,
       mensaje: "Error al actualizar el método de pago",
       error: error.message,
-    })
+    });
   }
 }
-

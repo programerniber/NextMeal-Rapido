@@ -5,8 +5,9 @@ import {
   crearVenta,
   actualizarVenta,
   eliminarVenta,
+  actualizarMetodoPago
 } from "../controllers/venta-controller.js"
-import { validarCreacionVenta, validarActualizacionVenta, validarIdVenta } from "../middlewares/venta-validator.js"
+import { validarCreacionVenta, validarActualizacionVenta, validarIdVenta, validarMetodoPago } from "../middlewares/venta-validator.js"
 import { autenticar, autorizarAdmin, verificarPermiso } from "../middlewares/autenticador-validator.js"
 
 const routerVenta = Router()
@@ -32,5 +33,12 @@ routerVenta.delete("/:id",
   validarIdVenta, 
   eliminarVenta
 )
+routerVenta.put("/:id/metodo-pago",
+  // autenticar,
+  // verificarPermiso("ventas", "editar"),
+  // validarIdVenta,
+  // validarMetodoPago,
+  actualizarMetodoPago
+);
 
 export default routerVenta
