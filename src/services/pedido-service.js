@@ -10,7 +10,7 @@ export class PedidoService {
       include: [
         {
           model: Cliente,
-          attributes: ["nombrecompleto", "telefono"],
+          attributes: ["nombrecompleto", "telefono","correoElectronico"],
         },
         {
           model: Producto,
@@ -30,7 +30,7 @@ export class PedidoService {
       include: [
         {
           model: Cliente,
-          attributes: ["nombrecompleto"],
+          attributes: ["nombrecompleto","correoElectronico"],
         },
         {
           model: Producto,
@@ -162,5 +162,25 @@ export class PedidoService {
     }
 
     return await pedido.update({ estado });
+  }
+  async obtenerTerminados() {
+    return await Pedido.findAll({
+      where: { estado: "terminado" },
+      include: [
+        {
+          model: Cliente,
+          attributes: ["nombrecompleto", "telefono", "correoElectronico"],
+        },
+        {
+          model: Producto,
+          attributes: ["id", "nombre", "precio"],
+          through: {
+            model: PedidoProducto,
+            attributes: ["id", "cantidad", "precio_unitario", "subtotal"],
+          },
+        },
+      ],
+      order: [["id", "DESC"]],
+    })
   }
 }

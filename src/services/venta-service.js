@@ -1,5 +1,10 @@
+// venta-service.js
+
 import { VentaRepository } from "../repositories/venta-repository.js";
 import Pedido from "../models/pedido-model.js";
+import Cliente from "../models/cliente-model.js";
+import Producto from "../models/poductos-model.js"; // Asegúrate de que el nombre del archivo sea correcto
+import PedidoProducto from "../models/pedido-producto-model.js"; // Importación añadida
 
 export class VentaService {
   constructor() {
@@ -34,43 +39,70 @@ export class VentaService {
 
   async crear(ventaData) {
     try {
-        const pedido = await Pedido.findByPk(ventaData.id_pedido);
-        if (!pedido) {
-            throw new Error("El pedido no existe.");
-        }
+      // Verificar si el pedido existe y está terminado
+      const pedido = await Pedido.findByPk(ventaData.id_pedido, {
+        include: [
+          {
+            model: Cliente,
+            attributes: ["id", "nombrecompleto", "telefono", "correoElectronico"]
+          },
+          {
+            model: Producto,
+            through: {
+              model: PedidoProducto,
+              attributes: ["cantidad", "precio_unitario", "subtotal"]
+            }
+          }
+        ]
+      });
 
-        if (pedido.estado !== "terminado") {
-            throw new Error("No se puede realizar la venta. El pedido no está terminado.");
-        }
+      if (!pedido) {
+        throw new Error("El pedido no existe.");
+      }
 
-        ventaData.total_pagar = pedido.total;
+      if (pedido.estado !== "terminado") {
+        throw new Error("No se puede realizar la venta. El pedido no está terminado.");
+      }
 
-        if (ventaData.total_pagar <= 0) {
-            throw new Error("El total de la venta debe ser mayor a 0.");
-        }
+      // Verificar si ya existe una venta para este pedido
+      const ventaExistente = await this.ventaRepository.obtenerPorPedidoId(ventaData.id_pedido);
+      if (ventaExistente) {
+        throw new Error("Ya existe una venta registrada para este pedido.");
+      }
 
-        const metodosValidos = ["efectivo", "transferencia"];
-        if (!metodosValidos.includes(ventaData.metodo_pago)) {
-            throw new Error("Método de pago no válido.");
-        }
+      // Establecer el total a pagar
+      ventaData.total_pagar = pedido.total;
 
-        return await this.ventaRepository.crear(ventaData);
+      if (ventaData.total_pagar <= 0) {
+        throw new Error("El total de la venta debe ser mayor a 0.");
+      }
+
+      // Validar método de pago
+      const metodosValidos = ["efectivo", "transferencia"];
+      if (!metodosValidos.includes(ventaData.metodo_pago)) {
+        throw new Error("Método de pago no válido. Debe ser 'efectivo' o 'transferencia'.");
+      }
+
+      // Crear la nueva venta
+      const nuevaVenta = await this.ventaRepository.crear(ventaData);
+
+      // Obtener la venta completa con sus relaciones
+      return await this.obtenerPorId(nuevaVenta.id);
     } catch (error) {
-        console.error("Error en servicio crear:", error);
-        throw error;
+      console.error("Error en servicio crear:", error);
+      throw error;
     }
-}
-
+  }
 
   async actualizar(id, ventaData) {
     try {
-      
+      // Verificar si la venta existe
       const venta = await this.ventaRepository.obtenerPorId(id);
       if (!venta) {
         throw new Error("Venta no encontrada.");
       }
 
-     
+      // Validar método de pago si se está actualizando
       if (ventaData.metodo_pago) {
         const metodosValidos = ["efectivo", "transferencia"];
         if (!metodosValidos.includes(ventaData.metodo_pago)) {
@@ -78,7 +110,7 @@ export class VentaService {
         }
       }
 
-      
+      // Actualizar la venta
       return await this.ventaRepository.actualizar(id, ventaData);
     } catch (error) {
       console.error("Error en servicio actualizar:", error);
@@ -101,18 +133,16 @@ export class VentaService {
 
   async actualizarMetodoPago(id, metodoPago) {
     try {
-     
       const metodosValidos = ["efectivo", "transferencia"];
       if (!metodosValidos.includes(metodoPago)) {
         throw new Error("Método de pago no válido.");
       }
 
-     
       const ventaActualizada = await this.ventaRepository.actualizarMetodoPago(id, metodoPago);
       if (!ventaActualizada) {
         throw new Error("Venta no encontrada.");
       }
-      
+
       return ventaActualizada;
     } catch (error) {
       console.error("Error en servicio actualizarMetodoPago:", error);
@@ -120,3 +150,4 @@ export class VentaService {
     }
   }
 }
+ 
