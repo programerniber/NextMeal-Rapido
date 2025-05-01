@@ -1,8 +1,9 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database.js";
 import Pedido from "./pedido-model.js";
-import Cliente from "./cliente-model.js";
-import Producto from "./poductos-model.js";
+import Cliente from "./cliente-model.js"; // Asegúrate de importar el modelo Cliente
+import Producto from "./poductos-model.js"; // Asegúrate de importar el modelo Producto
+import PedidoProducto from "./pedido-producto-model.js";
 
 const Venta = sequelize.define(
   "Venta",
@@ -33,7 +34,6 @@ const Venta = sequelize.define(
       type: DataTypes.ENUM("efectivo", "transferencia"),
       allowNull: false,
     },
-   
   },
   {
     timestamps: true,
@@ -42,33 +42,6 @@ const Venta = sequelize.define(
 
 // Relaciones
 Venta.belongsTo(Pedido, { foreignKey: "id_pedido" });
-Pedido.hasMany(Venta, { foreignKey: "id_pedido" });
-
-// Relaciones directas con Cliente y Producto
-// Estas relaciones se establecerán a través de hooks
-Venta.belongsTo(Cliente, { foreignKey: "id_cliente" });
-Cliente.hasMany(Venta, { foreignKey: "id_cliente" });
-
-Venta.belongsTo(Producto, { foreignKey: "id_producto" });
-Producto.hasMany(Venta, { foreignKey: "id_producto" });
-
-// Hook para establecer automáticamente id_cliente e id_producto desde el pedido
-Venta.beforeCreate(async (venta) => {
-  if (venta.id_pedido) {
-    const pedido = await Pedido.findByPk(venta.id_pedido, {
-      include: [
-        { model: Cliente },
-        { model: Producto }
-      ]
-    });
-    
-    if (pedido) {
-      venta.id_cliente = pedido.id_cliente;
-      venta.id_producto = pedido.id_producto;
-
-      await pedido.update({ estado: "terminado" });
-    }
-  }
-});
+Pedido.hasOne(Venta, { foreignKey: "id_pedido" });
 
 export default Venta;

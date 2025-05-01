@@ -4,18 +4,23 @@ const pedidoService = new PedidoService();
 
 export async function obtenerTodos(req, res) {
   try {
-    const pedidos = await pedidoService.obtenerTodos();
-    res.status(200).json({
-      exito: true,
-      data: pedidos,
-    });
+    const { estado } = req.query
+    let pedidos
+
+    if (estado === "terminado") {
+      pedidos = await pedidoService.obtenerTerminados()
+    } else {
+      pedidos = await pedidoService.obtenerTodos()
+    }
+
+    res.json({ exito: true, data: pedidos })
   } catch (error) {
-    console.error("Error al obtener pedidos:", error);
+    console.error("Error al obtener pedidos:", error)
     res.status(500).json({
       exito: false,
       mensaje: "Error al obtener pedidos",
       error: error.message,
-    });
+    })
   }
 }
 
@@ -133,4 +138,5 @@ export async function cambiarEstadopedidos(req, res) {  // Mantenemos el nombre 
       error: error.message,
     });
   }
+  
 }
