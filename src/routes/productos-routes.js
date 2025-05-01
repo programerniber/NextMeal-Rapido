@@ -11,7 +11,7 @@ import {
   validarActualizacionProducto,
   validarIdProducto,
 } from "../middlewares/productos-validator.js"
-import { autenticar, verificarPermiso } from "../middlewares/auth-middleware.js" // Asumiendo que este es el archivo correcto
+import { autenticar, verificarPermiso } from "../middlewares/autenticador-validator.js"
 
 const routerProductos = Router()
 
