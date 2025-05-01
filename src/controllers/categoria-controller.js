@@ -86,14 +86,14 @@ export async function crearCategoria(req, res) {
       });
     }
 
-    const categoriaData = {
+    const categoryData = {
       nombre,
       descripcion: descripcion || "",
       estado: estado || "activo",
       // creadoPor: req.usuario.id
     };
 
-    const nuevaCategoria = await categoryServices.crearCategoria(categoriaData);
+    const nuevaCategoria = await categoryServices.crearCategoria(categoryData);
     
     res.status(201).json({
       exito: true,
@@ -119,7 +119,6 @@ export async function crearCategoria(req, res) {
 
 export async function actualizarCategoria(req, res) {
   try {
-    //Verificar autenticación
     if (!req.usuario || !req.usuario.id) {
       return res.status(401).json({ 
         exito: false, 
@@ -128,9 +127,7 @@ export async function actualizarCategoria(req, res) {
     }
 
     const { id } = req.params;
-    const data = req.body;
 
-    // Validaciones básicas
     if (!id) {
       return res.status(400).json({ 
         exito: false, 
@@ -138,7 +135,9 @@ export async function actualizarCategoria(req, res) {
       });
     }
 
-    if (!data.nombre && !data.descripcion && !data.estado) {
+    const { nombre, descripcion, estado } = req.body; // ✅ Agregado aquí
+
+    if (!nombre && !descripcion && !estado) {
       return res.status(400).json({ 
         exito: false, 
         mensaje: "Debe proporcionar al menos un campo para actualizar" 
@@ -149,10 +148,11 @@ export async function actualizarCategoria(req, res) {
       ...(nombre && { nombre }),
       ...(descripcion && { descripcion }),
       ...(estado && { estado }),
-       actualizadoPor: req.usuario.id,
-      ...data,
+      actualizadoPor: req.usuario.id,
       fechaActualizacion: new Date()
     };
+
+    console.log("Actualizando categoría con:", updateData); // ✅ Opcional para debug
 
     const categoriaActualizada = await categoryServices.actualizarCategoria(id, updateData);
 
@@ -177,13 +177,14 @@ export async function actualizarCategoria(req, res) {
         mensaje: "Ya existe una categoría con ese nombre" 
       });
     }
-    
+
     res.status(500).json({ 
       exito: false, 
       mensaje: "Error interno al actualizar la categoría" 
     });
   }
 }
+
 
 export async function eliminarCategoria(req, res) {
   try {

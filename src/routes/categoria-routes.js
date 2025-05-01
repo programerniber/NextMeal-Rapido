@@ -17,15 +17,15 @@ import { autenticar, autorizarAdmin, verificarPermiso } from "../middlewares/aut
 const routercategoria = Router()
 
 routercategoria.get("/",
-  // autenticar, 
+  autenticar, 
   obtenerTodasLasCategorias)
 
 routercategoria.get("/:id", autenticar, 
 validarIdCategoria, 
 obtenerCategoriaPorId)
 routercategoria.post("/", 
-  // autenticar, 
-  // verificarPermiso("categorias", "crear"), 
+  autenticar, 
+  verificarPermiso("categorias", "crear"), 
   createValidation, 
   crearCategoria
 )
