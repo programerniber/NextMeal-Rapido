@@ -1,16 +1,33 @@
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
 
-const SECRET_KEY = process.env.SECRET_KEY; 
+dotenv.config()
 
-export const generarToken = (user) => {
-  return jwt.sign(
-    {
-        id: user.id,
-        id_rol:user.id_rol
-    },
-    SECRET_KEY,
-    {
-      expiresIn: "1h"
-    }
-  );
-};
+const SECRET_KEY = process.env.SECRET_KEY
+
+if (!SECRET_KEY) {
+  console.error("ERROR: SECRET_KEY no está definido en las variables de entorno.")
+  throw new Error("Error de configuración del servidor")
+}
+
+export const generarToken = (usuario) => {
+  // Crear payload con información mínima necesaria
+  const payload = {
+    id: usuario.id,
+    nombre: usuario.nombre,
+    email: usuario.email,
+    id_rol: usuario.id_rol,
+  }
+
+  // Generar token con expiración de 24 horas
+  return jwt.sign(payload, SECRET_KEY, { expiresIn: "24h" })
+}
+
+export const verificarToken = (token) => {
+  try {
+    return jwt.verify(token, SECRET_KEY)
+  } catch (error) {
+    console.error("Error al verificar token:", error)
+    return null
+  }
+}

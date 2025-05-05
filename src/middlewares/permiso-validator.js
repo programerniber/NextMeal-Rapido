@@ -1,13 +1,15 @@
-import Usuario from "../models/usuario-model.js"
-import Rol from "../models/rol-model.js"
-import PermisoService from "../services/permiso-service.js" // ✅ Importación corregida
+import Usuario from "../models/usuario-model.js";
+import Rol from "../models/rol-model.js";
+import PermisoService from "../services/permiso-service.js";
 
-const permisoService = new PermisoService() // ✅ Instancia del servicio
+const permisoService = new PermisoService();
 
 export const verificarPermiso = (recurso, accion) => {
   return async (req, res, next) => {
     try {
-      const usuarioId = req.Rol?.id;
+      const usuarioId = req.user?.id || req.usuario?.id || req.Rol?.id;
+
+      console.log("Middleware verificarPermiso -> usuarioId:", usuarioId);
 
       if (!usuarioId) {
         return res.status(401).json({
@@ -28,17 +30,19 @@ export const verificarPermiso = (recurso, accion) => {
         });
       }
 
+      // ✅ Si es administrador, permitimos el acceso
       if (usuario.Rol.nombre === "administrador") {
         return next();
       }
 
-      // ✅ Usamos el servicio en lugar del modelo directamente
+      // 🔐 Verificamos si tiene el permiso
       const permisos = await permisoService.obtenerPorUsuario(usuarioId);
 
-      const permisoValido = permisos.some(permiso => 
-        permiso.recurso === recurso &&
-        permiso.accion === accion &&
-        permiso.activo
+      const permisoValido = permisos.some(
+        (permiso) =>
+          permiso.recurso === recurso &&
+          permiso.accion === accion &&
+          permiso.activo
       );
 
       if (permisoValido) {
@@ -49,7 +53,6 @@ export const verificarPermiso = (recurso, accion) => {
         exito: false,
         mensaje: `Acceso denegado. No tienes permiso para ${accion} en ${recurso}.`,
       });
-
     } catch (error) {
       console.error("Error al verificar permisos:", error);
       return res.status(500).json({

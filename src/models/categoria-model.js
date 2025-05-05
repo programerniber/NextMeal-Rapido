@@ -12,10 +12,10 @@ const Categoria = sequelize.define('Categoria',{
     allowNull: false,
     unique:false
  },
- estado:{
-    type: DataTypes.BOOLEAN,
-    defaultValue:true
- },
+ estado: {
+       type: DataTypes.ENUM("activo", "inactivo"),
+       defaultValue: "activo",
+     },
  descripcion:{
    type: DataTypes.STRING,
    allowNull: false
