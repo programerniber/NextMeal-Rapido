@@ -25,7 +25,7 @@ export class PedidoRepository {
       include: [
         {
           model: Cliente,
-          attributes: ["nombrecompleto","telefono"],
+          attributes: ["nombrecompleto","telefono","correoElectronico"],
         },
         {
           model: Producto,

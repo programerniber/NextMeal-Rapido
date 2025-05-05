@@ -130,31 +130,4 @@ export async function eliminarVenta(req, res) {
   }
 }
 
-export async function actualizarMetodoPago(req, res) {
-  try {
-    const { id } = req.params;
-    const { metodo_pago } = req.body;
 
-    const ventaActualizada = await ventaService.actualizarMetodoPago(id, metodo_pago);
-
-    if (!ventaActualizada) {
-      return res.status(404).json({
-        exito: false,
-        mensaje: "Venta no encontrada",
-      });
-    }
-
-    res.status(200).json({
-      exito: true,
-      data: ventaActualizada,
-      mensaje: `Método de pago actualizado a '${metodo_pago}'`,
-    });
-  } catch (error) {
-    console.error("Error al actualizar el método de pago:", error);
-    res.status(400).json({
-      exito: false,
-      mensaje: "Error al actualizar el método de pago",
-      error: error.message,
-    });
-  }
-}
