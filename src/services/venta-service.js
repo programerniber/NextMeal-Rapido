@@ -131,23 +131,7 @@ export class VentaService {
     }
   }
 
-  async actualizarMetodoPago(id, metodoPago) {
-    try {
-      const metodosValidos = ["efectivo", "transferencia"];
-      if (!metodosValidos.includes(metodoPago)) {
-        throw new Error("Método de pago no válido.");
-      }
+  
 
-      const ventaActualizada = await this.ventaRepository.actualizarMetodoPago(id, metodoPago);
-      if (!ventaActualizada) {
-        throw new Error("Venta no encontrada.");
-      }
-
-      return ventaActualizada;
-    } catch (error) {
-      console.error("Error en servicio actualizarMetodoPago:", error);
-      throw error;
-    }
-  }
 }
  

@@ -38,7 +38,7 @@ export class VentaRepository {
           include: [
             {
               model: Cliente,
-              attributes: ["id", "nombrecompleto", "telefono", "email"]
+              attributes: ["id", "nombrecompleto", "telefono", "correoElectronico"]
             },
             {
               model: Producto,
