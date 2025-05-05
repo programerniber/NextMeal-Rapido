@@ -1,18 +1,20 @@
-import { Router } from "express";
+import { Router } from "express"
 import {
-  obtenerRoles,
+  obtenerTodosLosRoles,
   obtenerRolPorId,
   crearRol,
   actualizarRol,
-  eliminarRol
-} from "../controllers/rol-controller.js";
+  eliminarRol,
 
-const routerol = Router();
+} from "../controllers/rol-controller.js"
 
-routerol.get("/", obtenerRoles);
-routerol.get("/:id", obtenerRolPorId);
-routerol.post("/", crearRol);
-routerol.put("/:id", actualizarRol);
-routerol.delete("/:id", eliminarRol);
+const routerol = Router()
 
-export default routerol;
+routerol.get("/", obtenerTodosLosRoles)
+routerol.get("/:id", obtenerRolPorId)
+routerol.post("/", crearRol)
+routerol.put("/:id", actualizarRol)
+routerol.delete("/:id", eliminarRol)
+
+
+export default routerol

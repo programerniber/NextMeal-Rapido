@@ -4,6 +4,9 @@ export class UsuarioRepository {
   async obtenerTodos() {
     return await Usuario.findAll({ order: [["id", "DESC"]] });
   }
+  async obtenerpermisosDelUsuario(id) {
+    return await Usuario.findByPk(id);
+  }
 
   async obtenerPorId(id) {
     return await Usuario.findByPk(id);
@@ -36,4 +39,3 @@ export class UsuarioRepository {
     return await usuario.update({ id_rol });
   }
 }
-

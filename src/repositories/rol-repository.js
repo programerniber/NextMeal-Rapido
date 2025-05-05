@@ -1,28 +1,51 @@
-import Rol from "../models/rol-model.js";
+import Rol from "../models/rol-model.js"
+import Permiso from "../models/permiso-model.js"
 
 export class RolRepository {
-  async obtenerTodosLosRoles() {
-    return await Rol.findAll();
-  }
 
+  async obtenerTodosLosRoles () {
+    return await Rol.findAll({
+      include: [
+        {
+          model: Permiso,
+          attributes: ["id", "recurso", "accion", "activo"],
+        // Cambiado para usar 'Permisos' con mayúscula
+        },
+      ],
+    })
+  }
+  
   async obtenerRolPorId(id) {
-    return await Rol.findByPk(id);
+    return await Rol.findByPk(id, {
+      include: [
+        {
+          model: Permiso,
+          attributes: ["id", "recurso", "accion", "activo"],
+         
+        },
+      ],
+    })
   }
 
-  async crearRol(rolData) {
-    return await Rol.create(rolData);
+
+  async crearRol(rolData, options = {}) {
+    return await Rol.create(rolData, options)
   }
 
   async actualizarRol(id, rolData) {
-    const rol = await this.obtenerRolPorId(id);
-    if (!rol) throw new Error("Rol no encontrado");
-    return await rol.update(rolData);
+    const rol = await Rol.findByPk(id)
+    if (!rol) return null
+    await rol.update(rolData)
+    return rol
   }
 
   async eliminarRol(id) {
-    const rol = await this.obtenerRolPorId(id);
-    if (!rol) throw new Error("Rol no encontrado");
-    await rol.destroy();
-    return { mensaje: "Rol eliminado exitosamente" };
+    const rol = await Rol.findByPk(id)
+    if (!rol) return false
+    await rol.destroy()
+    return true
   }
+
+ 
+  
 }

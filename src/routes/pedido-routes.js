@@ -24,30 +24,30 @@ routerpedido.get("/:id",//autenticar, validarIdPedido,
                  //autenticacion
    obtenerPorId)
 routerpedido.post("/", 
-  // autenticar, 
-  // verificarPermiso("pedidos", "crear"), 
-  // validarCreacionPedido, 
+  autenticar, 
+  verificarPermiso("pedidos", "crear"), 
+  validarCreacionPedido, 
   crearpedidos
 )
 routerpedido.put("/:id", 
-  // autenticar, 
-  // verificarPermiso("pedidos", "editar"), 
-  // validarIdPedido, 
-  // validarActualizacionPedido, 
+  autenticar, 
+  verificarPermiso("pedidos", "editar"), 
+  validarIdPedido, 
+  validarActualizacionPedido, 
   actualizarpedidos
 )
 routerpedido.delete("/:id", 
-  // autenticar, 
-  // autorizarAdmin, // Mantener solo admin para eliminar
-  // validarIdPedido, 
+  autenticar, 
+  autorizarAdmin, // Mantener solo admin para eliminar
+  validarIdPedido, 
   eliminarpedidos
 )
 routerpedido.patch(
   "/:id/estado",
-  // autenticar,
-  // verificarPermiso("pedidos", "editar"),
-  // validarIdPedido,
-  // validarCambioEstadoPedido,
+  autenticar,
+  verificarPermiso("pedidos", "editar"),
+  validarIdPedido,
+  validarCambioEstadoPedido,
   cambiarEstadopedidos
   
 )

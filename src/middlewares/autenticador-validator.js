@@ -32,10 +32,10 @@ export const autenticar = async (req, res, next) => {
     req.usuario = decoded;
 
     // Cargar permisos si no están presentes
-    if (!req.usuario.permisos) {
-      const permisos = await permisoRepository.obtenerPorUsuario(req.usuario.id);
-      req.usuario.permisos = permisos.map(p => ({ recurso: p.recurso, accion: p.accion }));
-    }
+    // if (!req.usuario.permisos) {
+    //   const permisos = await permisoRepository.obtenerPorUsuario(req.usuario.id);
+    //   req.usuario.permisos = permisos.map(p => ({ recurso: p.recurso, accion: p.accion }));
+    // }
 
     next();
   } catch (error) {
