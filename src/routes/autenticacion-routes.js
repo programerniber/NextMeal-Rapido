@@ -12,7 +12,7 @@ import {
 import { autenticar, autorizarAdmin } from "../middlewares/autenticador-validator.js"
 const router = Router()
 // Rutas públicas
-router.post("/login", login)
+router.post("/register", login)
 router.post("/logout", logout)
 // Rutas protegidas
 router.get("/usuario-autenticado", autenticar, obtenerUsuarioAutenticado)

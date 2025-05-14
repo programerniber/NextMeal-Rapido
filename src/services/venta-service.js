@@ -101,7 +101,7 @@ export class VentaService {
       if (!venta) {
         throw new Error("Venta no encontrada.");
       }
-
+  
       // Validar método de pago si se está actualizando
       if (ventaData.metodo_pago) {
         const metodosValidos = ["efectivo", "transferencia"];
