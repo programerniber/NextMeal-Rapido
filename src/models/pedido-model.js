@@ -34,7 +34,7 @@ const Pedido = sequelize.define(
     // precio_unitario: {
     //   type: DataTypes.FLOAT,
     //   allowNull: false,
-    //   defaultValue: 0, 
+    //   defaultValue: 0,
     // },
 
     // cantidad: {
@@ -46,10 +46,9 @@ const Pedido = sequelize.define(
     total: {
       type: DataTypes.FLOAT,
       allowNull: false,
-      defaultValue: 0, 
+      defaultValue: 0,
     },
 
-  
     direccion_envio: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -62,33 +61,38 @@ const Pedido = sequelize.define(
     },
 
     estado: {
-      type: DataTypes.ENUM("pendiente", "preparacion", "terminado", "cancelado"),
+      type: DataTypes.ENUM(
+        "pendiente",
+        "preparacion",
+        "terminado",
+        "cancelado"
+      ),
       allowNull: false,
       defaultValue: "pendiente",
     },
   },
   {
     timestamps: true,
-//     hooks: {
-//       async afterCreate(pedido, options) {
-//         if (options.productos) {
-//           await pedido.setProductos(options.productos);
-//           await pedido.calcularTotal();
-//         }
-//       },
-//       async afterUpdate(pedido, options) {
-//         if (options.productos) {
-//           await pedido.setProductos(options.productos);
-//           await pedido.calcularTotal();
-//         }
-//       },
-//     },
+    //     hooks: {
+    //       async afterCreate(pedido, options) {
+    //         if (options.productos) {
+    //           await pedido.setProductos(options.productos);
+    //           await pedido.calcularTotal();
+    //         }
+    //       },
+    //       async afterUpdate(pedido, options) {
+    //         if (options.productos) {
+    //           await pedido.setProductos(options.productos);
+    //           await pedido.calcularTotal();
+    //         }
+    //       },
+    //     },
   }
- );
+);
 // Método para calcular el total
-Pedido.prototype.calcularTotal = async function() {
+Pedido.prototype.calcularTotal = async function () {
   const items = await PedidoProducto.findAll({
-    where: { pedido_id: this.id }
+    where: { pedido_id: this.id },
   });
   const total = items.reduce((sum, item) => sum + item.subtotal, 0);
   await this.update({ total });
@@ -99,14 +103,14 @@ Pedido.belongsTo(Cliente, { foreignKey: "id_cliente" });
 Pedido.belongsToMany(Producto, {
   through: PedidoProducto,
   foreignKey: "pedido_id",
-  otherKey: "producto_id"
+  otherKey: "producto_id",
 });
 
 Cliente.hasMany(Pedido, { foreignKey: "id_cliente" });
 Producto.belongsToMany(Pedido, {
   through: PedidoProducto,
   foreignKey: "producto_id",
-  otherKey: "pedido_id"
+  otherKey: "pedido_id",
 });
 
 export default Pedido;

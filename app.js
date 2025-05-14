@@ -14,6 +14,7 @@ import routerpedido from "./src/routes/pedido-routes.js"
 import routerVenta from "./src/routes/venta-routes.js"
 import routerol from "./src/routes/rol-routes.js"
 import routerPermiso from "./src/routes/permiso-routes.js"
+import routerDashboard from "./src/routes/dashboard-routes.js"
 import cookieParser from "cookie-parser"
 
 dotenv.config()
@@ -23,6 +24,7 @@ const app = express()
 // Configuración de CORS mejorada para cookies
 app.use(
   cors({
+    origin:"*",
     origin: process.env.FRONTEND_URL || "http://localhost:5173", // URL del frontend
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -48,6 +50,7 @@ app.use("/api/autenticacion", routerautenticacion)
 app.use("/api/categoria", routercategoria)
 app.use("/api/rol", routerol)
 app.use("/api/permiso", routerPermiso)
+app.use("/api/dashboard", routerDashboard)
 
 // Middleware de manejo de errores
 app.use(errorHandler)
