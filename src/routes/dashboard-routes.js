@@ -23,3 +23,4 @@ routerDashboard.get("/estadisticas/:periodo", obtenerEstadisticasPorPeriodo)
 // routerDashboard.get("/clientes-destacados", obtenerClientesDestacados)
 
 export default routerDashboard
+
