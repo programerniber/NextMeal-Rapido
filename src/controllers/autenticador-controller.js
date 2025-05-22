@@ -106,6 +106,7 @@ export const obtenerUsuarios = async (req, res) => {
       mensaje: "Lista de usuarios registrados",
       usuarios: usuarios.map((usuario) => ({
         id: usuario.id,
+        estado: usuario.estado,
         nombre: usuario.nombre,
         email: usuario.email,
         id_rol: usuario.id_rol,
@@ -131,6 +132,7 @@ export const obtenerUsuario = async (req, res) => {
       id: usuario.id,
       nombre: usuario.nombre,
       email: usuario.email,
+      estado: usuario.estado,
       id_rol: usuario.id_rol,
     })
   } catch (error) {
@@ -142,10 +144,10 @@ export const obtenerUsuario = async (req, res) => {
 // ✅ **Actualizar usuario**
 export const actualizarUsuario = async (req, res) => {
   const { id } = req.params
-  const { nombre, email, id_rol } = req.body
+  const data = req.body
 
   try {
-    const usuarioActualizado = await usuarioService.actualizarUsuario(id, { nombre, email, id_rol })
+    const usuarioActualizado = await usuarioService.actualizarUsuario(id, data)
 
     if (!usuarioActualizado) {
       return res.status(404).json({ mensaje: "Usuario no encontrado" })

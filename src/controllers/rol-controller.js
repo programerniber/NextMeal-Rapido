@@ -24,7 +24,7 @@ export async function obtenerRolesConPermisos(req, res) {
 
 export async function obtenerRolPorId(req, res) {
   try {
-    const { id } = req.params;
+    const { id } = req.params
     const rol = await rolService.obtenerRolPorId(id)
 
     if (!rol) {
@@ -40,17 +40,16 @@ export async function obtenerRolPorId(req, res) {
 
 export async function crearRol(req, res) {
   try {
-    const rolData = req.body;
-    
-    // Validación básica
-    if (!rolData.nombre) {
-      return res.status(400).json({
-        exito: false,
-        mensaje: "El nombre del rol es obligatorio",
-      });
-    }
+    const rolData = req.body
 
-    // Ahora el servicio maneja directamente el formato simplificado
+    // Eliminamos esta validación manual ya que ahora se maneja con express-validator
+    // if (!rolData.nombre) {
+    //   return res.status(400).json({
+    //     exito: false,
+    //     mensaje: "El nombre del rol es obligatorio",
+    //   });
+    // }
+
     const nuevoRol = await rolService.crearRol(rolData)
     res.status(201).json({ exito: true, data: nuevoRol, mensaje: "Rol creado exitosamente" })
   } catch (error) {
@@ -65,7 +64,7 @@ export async function actualizarRol(req, res) {
     const rolData = req.body
 
     const rolActualizado = await rolService.actualizarRol(id, rolData)
-   
+
     res.status(200).json({ exito: true, data: rolActualizado, mensaje: "Rol actualizado correctamente" })
   } catch (error) {
     console.error("Error al actualizar rol:", error.message)
@@ -76,7 +75,7 @@ export async function actualizarRol(req, res) {
 export async function eliminarRol(req, res) {
   try {
     const { id } = req.params
-    
+
     const resultado = await rolService.eliminarRol(id)
     if (!resultado) {
       return res.status(404).json({ exito: false, mensaje: "Rol no encontrado" })

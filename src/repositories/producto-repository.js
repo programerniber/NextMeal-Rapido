@@ -1,8 +1,14 @@
 import Producto from "../models/producto-model.js";
+import Categoria from "../models/categoria-model.js";
 
 export class ProductoRepository {
   async obtenerTodos() {
     return await Producto.findAll({
+      include: [{
+        model: Categoria,
+        as: "categoria",
+        attributes: ["id", "nombre"]
+      }],
       order: [["id", "DESC"]],
     });
   }

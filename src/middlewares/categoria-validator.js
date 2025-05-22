@@ -19,7 +19,7 @@ export const validarCreacionCategoriaExistente = [
   body("descripcion")
     .notEmpty()
     .withMessage("La descripción es obligatoria")
-    .isLength({ min: 5, max: 100 })
+    .isLength({ max: 100 })
     .withMessage("La descripción debe tener entre 5 a 100 caracteres"),
 ];
 
@@ -37,7 +37,7 @@ export const validacionActualizacionCategorias = [
 
   body("descripcionCategoria")
     .optional()
-    .isLength({ min: 5, max: 100 })
+    .isLength({ max: 100 })
     .withMessage("La descripción debe tener entre 5 a 100 caracteres"),
 ];
 

@@ -2,13 +2,13 @@ import Producto from "../models/poductos-model.js";
 import Categoria from "../models/categoria-model.js";
 
 export class ProductoService {
-    
+
     async obtenerProducto() {
         return await Producto.findAll({
-            include: {
+            include: [{
                 model: Categoria,
-                attributes: ["nombre"],
-            },
+                attributes: ["id", "nombre"]
+            }],
             order: [["id", "DESC"]],
         });
     }
