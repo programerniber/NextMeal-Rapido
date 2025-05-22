@@ -28,7 +28,6 @@ export const validarCreacionProducto=[
   .withMessage("La descripción es obligatoria")
   .isString()
   .withMessage("La descripción debe ser una cadena de texto")
-  .isLength({ min: 5 })
   .withMessage("La descripción debe tener al menos 5 caracteres"),
 
 
@@ -67,8 +66,7 @@ export const validarActualizacionProducto = [
 
   body("descripcion")
     .notEmpty()
-    .withMessage("la descipcion debe tener minimo 5 caracteres")
-    .isLength({ min: 5 }),
+    .withMessage("la descipcion debe tener minimo 5 caracteres"),
 
   (req, res, next) => {
     const errores = validationResult(req);
