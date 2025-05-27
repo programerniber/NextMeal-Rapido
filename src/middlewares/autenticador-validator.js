@@ -17,7 +17,7 @@ if (!SECRET_KEY) {
 // Middleware para autenticar al usuario usando token en cookies
 export const autenticar = async (req, res, next) => {
   try {
-    const token = req.cookies.token
+    const token = req.cookies.token || req.headers['authorization']?.split(' ')[1]
 
     if (!token) {
       return res.status(401).json({ exito: false, mensaje: "Acceso denegado, token no proporcionado" })
