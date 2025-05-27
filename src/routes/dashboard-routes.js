@@ -1,15 +1,17 @@
 import { Router } from "express";
 import {
-  obtenerResumenDashboard,
-  obtenerVentasRecientes,
-  obtenerEstadisticasPorPeriodo
+  obtenerResumen,
+  obtenerEstadisticasSemanal,
+  obtenerMetodosPagoHoy,
+  obtenerVentasEnTiempoReal
 } from "../controllers/dashboard-controller.js";
 
 const routerDashboard = Router();
 
-// Rutas optimizadas
-routerDashboard.get("/resumen", obtenerResumenDashboard);
-routerDashboard.get("/ventas-recientes", obtenerVentasRecientes);
-routerDashboard.get("/estadisticas/:periodo", obtenerEstadisticasPorPeriodo);
+// Rutas públicas del dashboard - SIN autenticación
+routerDashboard.get("/resumen", obtenerResumen);
+routerDashboard.get("/estadisticas/semanal", obtenerEstadisticasSemanal);
+routerDashboard.get("/metodos-pago/hoy", obtenerMetodosPagoHoy);
+routerDashboard.get("/ventas/tiempo-real", obtenerVentasEnTiempoReal);
 
 export default routerDashboard;
