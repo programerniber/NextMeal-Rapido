@@ -23,9 +23,9 @@ export const validarCreacionPedido = [
 
 
 
-  body("direccion_envio")
-    .notEmpty().withMessage("La dirección de envío es obligatoria")
-    .isString().withMessage("La dirección de envío debe ser un texto"),
+  // body("direccion_envio")
+  //   .notEmpty().withMessage("La dirección de envío es obligatoria")
+  //   .isString().withMessage("La dirección de envío debe ser un texto"),
 
   body("estado")
     .optional()
@@ -48,9 +48,9 @@ export const validarActualizacionPedido = [
     .optional()
     .isIn(["Efectivo", "Transferencia"]).withMessage("Método de pago no válido"),
 
-  body("direccion_envio")
-    .optional()
-    .isString().withMessage("La dirección de envío debe ser un texto"),
+  // body("direccion_envio")
+  //   .optional()
+  //   .isString().withMessage("La dirección de envío debe ser un texto"),
 
   body("estado")
     .optional()

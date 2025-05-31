@@ -1,71 +1,71 @@
-import  {DashboardService} from "../services/dashboard-services.js";
+import { DashboardService } from "../services/dashboard-services.js";
 
 const dashboardService = new DashboardService();
 
-export async function obtenerResumen(req, res) {
+export const obtenerResumen = async (req, res) => {
   try {
     const resumen = await dashboardService.obtenerResumen();
-    res.status(200).json({
-      exito: true,
-      data: resumen,
+    res.json({
+      success: true,
+      data: resumen
     });
   } catch (error) {
-    console.error("Error al obtener resumen:", error);
+    console.error("Error en obtenerResumen:", error);
     res.status(500).json({
-      exito: false,
-      mensaje: "Error al obtener resumen del dashboard",
-      error: error.message,
+      success: false,
+      message: "Error al obtener resumen del dashboard",
+      error: error.message
     });
   }
-}
+};
 
-export async function obtenerEstadisticasSemanal(req, res) {
+export const obtenerEstadisticasSemanal = async (req, res) => {
   try {
     const estadisticas = await dashboardService.obtenerEstadisticasSemanal();
-    res.status(200).json({
-      exito: true,
-      data: estadisticas,
+    res.json({
+      success: true,
+      data: estadisticas
     });
   } catch (error) {
-    console.error("Error al obtener estadísticas semanales:", error);
+    console.error("Error en obtenerEstadisticasSemanal:", error);
     res.status(500).json({
-      exito: false,
-      mensaje: "Error al obtener estadísticas semanales",
-      error: error.message,
+      success: false,
+      message: "Error al obtener estadísticas semanales",
+      error: error.message
     });
   }
-}
+};
 
-export async function obtenerMetodosPagoHoy(req, res) {
+export const obtenerMetodosPagoHoy = async (req, res) => {
   try {
     const metodosPago = await dashboardService.obtenerMetodosPagoHoy();
-    res.status(200).json({
-      exito: true,
-      data: metodosPago,
+    res.json({
+      success: true,
+      data: metodosPago
     });
   } catch (error) {
-    console.error("Error al obtener métodos de pago de hoy:", error);
+    console.error("Error en obtenerMetodosPagoHoy:", error);
     res.status(500).json({
-      exito: false,
-      mensaje: "Error al obtener métodos de pago de hoy",
-      error: error.message,
+      success: false,
+      message: "Error al obtener métodos de pago",
+      error: error.message
     });
   }
-}
+};
 
-export async function obtenerVentasEnTiempoReal(req, res) {
+export const obtenerVentasEnTiempoReal = async (req, res) => {
   try {
-    const ventasHoy = await dashboardService.obtenerVentasHoy();
-    res.status(200).json({
-      exito: true,
-      data: ventasHoy,
+    const ventas = await dashboardService.obtenerVentasHoy();
+    res.json({
+      success: true,
+      data: ventas
     });
   } catch (error) {
-    console.error("Error al obtener ventas en tiempo real:", error);
+    console.error("Error en obtenerVentasEnTiempoReal:", error);
     res.status(500).json({
-      exito: false,
-      mensaje: "Error al obtener ventas en tiempo real",
-      error: error.message,
+      success: false,
+      message: "Error al obtener ventas en tiempo real",
+      error: error.message
     });
   }
-}
+};

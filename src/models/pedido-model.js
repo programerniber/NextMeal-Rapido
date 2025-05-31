@@ -22,26 +22,7 @@ const Pedido = sequelize.define(
       },
     },
 
-    // id_producto: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    //   references: {
-    //     model: Producto,
-    //     key: "id",
-    //   },
-    // },
-
-    // precio_unitario: {
-    //   type: DataTypes.FLOAT,
-    //   allowNull: false,
-    //   defaultValue: 0,
-    // },
-
-    // cantidad: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    //   defaultValue: 1,
-    // },
+  
 
     total: {
       type: DataTypes.FLOAT,
@@ -73,20 +54,7 @@ const Pedido = sequelize.define(
   },
   {
     timestamps: true,
-    //     hooks: {
-    //       async afterCreate(pedido, options) {
-    //         if (options.productos) {
-    //           await pedido.setProductos(options.productos);
-    //           await pedido.calcularTotal();
-    //         }
-    //       },
-    //       async afterUpdate(pedido, options) {
-    //         if (options.productos) {
-    //           await pedido.setProductos(options.productos);
-    //           await pedido.calcularTotal();
-    //         }
-    //       },
-    //     },
+  
   }
 );
 // Método para calcular el total
