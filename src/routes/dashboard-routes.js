@@ -2,7 +2,8 @@ import { Router } from "express";
 import {
   obtenerResumenDashboard,
   obtenerVentasRecientes,
-  obtenerEstadisticasPorPeriodo
+  obtenerEstadisticasPorPeriodo,
+  obtenerMetodosPagoHoy
 } from "../controllers/dashboard-controller.js";
 
 const routerDashboard = Router();
@@ -11,5 +12,6 @@ const routerDashboard = Router();
 routerDashboard.get("/resumen", obtenerResumenDashboard);
 routerDashboard.get("/ventas-recientes", obtenerVentasRecientes);
 routerDashboard.get("/estadisticas/:periodo", obtenerEstadisticasPorPeriodo);
+routerDashboard.get("/metodos-pago/hoy", obtenerMetodosPagoHoy);
 
 export default routerDashboard;
