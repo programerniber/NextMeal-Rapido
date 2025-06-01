@@ -141,12 +141,16 @@ export const obtenerUsuario = async (req, res) => {
   }
 }
 
-// ✅ **Actualizar usuario**
 export const actualizarUsuario = async (req, res) => {
   const { id } = req.params
   const data = req.body
 
   try {
+    // Si se está actualizando la contraseña, encriptarla
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, 10)
+    }
+
     const usuarioActualizado = await usuarioService.actualizarUsuario(id, data)
 
     if (!usuarioActualizado) {
