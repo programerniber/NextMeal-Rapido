@@ -10,6 +10,7 @@ import {
   crearUsuarioController,
 } from "../controllers/autenticador-controller.js"
 import { autenticar, autorizarAdmin } from "../middlewares/autenticador-validator.js"
+
 const router = Router()
 // Rutas públicas
 router.post("/register", login)

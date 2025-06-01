@@ -3,6 +3,7 @@ import express from "express"
 import cors from "cors"
 import morgan from "morgan"
 import dotenv from "dotenv"
+import cookieParser from "cookie-parser"
 import { errorHandler } from "./src/middlewares/errorHandler.js"
 import { conectarDB } from "./src/config/database.js"
 import routercategoria from "./src/routes/categoria-routes.js"
@@ -15,7 +16,7 @@ import routerVenta from "./src/routes/venta-routes.js"
 import routerol from "./src/routes/rol-routes.js"
 import routerPermiso from "./src/routes/permiso-routes.js"
 import routerDashboard from "./src/routes/dashboard-routes.js"
-import cookieParser from "cookie-parser"
+import recuperacionRoutes from "./src/routes/recuperacion-routes.js"
 
 dotenv.config()
 
@@ -35,7 +36,7 @@ app.use(
 app.use(morgan("dev"))
 app.use(express.json())
 app.use(cookieParser()) // Middleware para parsear cookies
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: true }))
 
 app.get("/api/test", (req, res) => {
   res.json({ mensaje: "API de Restaurante funcionando correctamente" })
@@ -51,6 +52,7 @@ app.use("/api/categoria", routercategoria)
 app.use("/api/rol", routerol)
 app.use("/api/permiso", routerPermiso)
 app.use("/api/dashboard", routerDashboard)
+app.use("/api/recuperacion", recuperacionRoutes)
 
 // Middleware de manejo de errores
 app.use(errorHandler)
