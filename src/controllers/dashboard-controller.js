@@ -55,7 +55,7 @@ export const obtenerMetodosPagoHoy = async (req, res) => {
 
 export const obtenerVentasEnTiempoReal = async (req, res) => {
   try {
-    const ventas = await dashboardService.obtenerVentasHoy();
+    const ventas = await dashboardService.obtenerVentasEnTiempoReal(); //MODIFICACION: antes se llamaba a obtenerVentasEnTiempoReal, ahora a obtenerVentasHoy
     res.json({
       success: true,
       data: ventas
@@ -68,4 +68,14 @@ export const obtenerVentasEnTiempoReal = async (req, res) => {
       error: error.message
     });
   }
+};
+
+export const obtenerVentasSemanales = async (req, res) => {
+    try {
+        const ventasSemanales = await dashboardService.obtenerVentasSemanales();
+        res.json({ success: true, data: ventasSemanales });
+    } catch (error) {
+        console.error("Error al obtener ventas semanales:", error);
+        res.status(500).json({ success: false, message: "Error al obtener ventas semanales", error: error.message });
+    }
 };

@@ -2,7 +2,7 @@ import { Op } from "sequelize";
 import Venta from "../models/venta-model.js";
 import Pedido from "../models/pedido-model.js";
 import Cliente from "../models/cliente-model.js";
-import { sequelize } from "../config/database.js";
+
 
 export class DashboardService {
   
@@ -167,7 +167,7 @@ export class DashboardService {
     }
   }
 
-  async obtenerVentasHoy() {
+  async obtenerVentasEnTiempoReal() {
     try {
       const hoy = new Date();
       const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
@@ -201,4 +201,41 @@ export class DashboardService {
       throw error;
     }
   }
+
+  async obtenerVentasSemanales() {
+  try {
+    const hoy = new Date();
+    const inicioSemana = new Date(hoy);
+    const dia = inicioSemana.getDay();
+    const diff = inicioSemana.getDate() - dia + (dia === 0 ? -6 : 1);
+    inicioSemana.setDate(diff);
+    inicioSemana.setHours(0, 0, 0, 0);
+
+    const ventas = await Venta.findAll({
+      where: {
+        fecha_venta: {
+          [Op.gte]: inicioSemana
+        }
+      },
+      include: [
+        {
+          model: Pedido,
+          include: [
+            {
+              model: Cliente,
+              attributes: ['nombrecompleto']
+            }
+          ]
+        }
+      ],
+      order: [['fecha_venta', 'DESC']]
+    });
+
+    return ventas;
+  } catch (error) {
+    console.error("Error en obtenerVentasSemanales:", error);
+    throw error;
+  }
+}
+
 }
