@@ -25,6 +25,7 @@ router.put("/usuarios/:id", autenticar, autorizarAdmin, actualizarUsuario)
 router.delete("/usuarios/:id", autenticar, autorizarAdmin, eliminarUsuario)
 
 // Nueva ruta para cambiar el estado de un usuario
+//
 router.put("/usuarios/:id/estado", autenticar, autorizarAdmin, async (req, res) => {
   try {
     const { id } = req.params
