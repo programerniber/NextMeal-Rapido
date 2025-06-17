@@ -38,7 +38,12 @@ export class RolRepository {
     await rol.update(rolData)
     return rol
   }
-
+  async cambiarEstadoRol(id, estado) {
+    const rol = await Rol.findByPk(id)
+    if (!rol) return null
+    await rol.update({ activo })
+    return rol
+  }
   async eliminarRol(id) {
     const rol = await Rol.findByPk(id)
     if (!rol) return false

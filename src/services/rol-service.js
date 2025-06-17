@@ -83,6 +83,26 @@ export class RolService {
       throw new Error("Error al actualizar el rol: " + error.message);
     }
   }
+
+   async cambiarEstadoRol(id, estado) {
+    try {
+      const rol = await this.obtenerRolPorId(id)
+      if (!rol) return null
+
+      await Rol.update({ estado }, { where: { id } })
+      return await this.obtenerRolPorId(id)
+    } catch (error) {
+      throw new Error("Error al cambiar el estado del rol: " + error.message)
+    }
+  }
+
+  async activarRol(id) {
+    return await this.cambiarEstadoRol(id, true)
+  }
+
+  async desactivarRol(id) {
+    return await this.cambiarEstadoRol(id, false)
+  }
   
   async eliminarRol(id) {
     const rol = await this.obtenerRolPorId(id);
