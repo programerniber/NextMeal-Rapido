@@ -1,7 +1,7 @@
 import { Router } from "express"
 import {
   obtenerTodosLosRoles,
-  obtenerRolesActivos,
+  // obtenerRolesActivos,
   obtenerRolPorId,
   crearRol,
   actualizarRol,
@@ -18,7 +18,7 @@ const routerol = Router()
 
 // Rutas existentes
 routerol.get("/", obtenerTodosLosRoles)
-routerol.get("/activos", obtenerRolesActivos)
+// routerol.get("/activos", obtenerRolesActivos)
 routerol.get("/:id", validarIdRol, handleValidationErrors, obtenerRolPorId)
 routerol.post("/", createRolValidation, handleValidationErrors, crearRol)
 routerol.put("/:id", validarIdRol, validacionActualizacionRol, handleValidationErrors, actualizarRol)
